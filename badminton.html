@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lathish - Badminton Achievements</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Typewriter effect */
+    .typewriter {
+      border-right: 3px solid;
+      white-space: nowrap;
+      overflow: hidden;
+      display: inline-block;
+    }
+    
+    /* Timeline styling */
+    .timeline-item {
+      position: relative;
+      padding-left: 2rem;
+      margin-bottom: 3rem;
+    }
+    .timeline-item:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(to bottom, #3b82f6, #8b5cf6);
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -8px;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #3b82f6;
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeInUp {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <div id="root"></div>
+  <script>
+    // ================== Components ==================
+    function Header() {
+      return React.createElement(
+        'header',
+        { className: 'bg-white shadow-sm sticky top-0 z-50' },
+        React.createElement(
+          'div',
+          { className: 'max-w-6xl mx-auto px-4 py-4' },
+          React.createElement(
+            'div',
+            { className: 'flex items-center justify-between' },
+            [
+              React.createElement(
+                'a',
+                { href: 'index.html', className: 'flex items-center space-x-3' },
+                [
+                  React.createElement(
+                    'div',
+                    { className: 'w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center' },
+                    React.createElement('span', { className: 'text-white font-bold text-xl' }, 'L')
+                  ),
+                  React.createElement(
+                    'div',
+                    null,
+                    [
+                      React.createElement('h1', { className: 'text-2xl font-bold text-gray-900' }, 'Lathish'),
+                      React.createElement('p', { className: 'text-sm text-gray-600' }, 'EAE Portfolio')
+                    ]
+                  )
+                ]
+              ),
+              React.createElement(
+                'nav',
+                { className: 'hidden md:flex space-x-6' },
+                [
+                  React.createElement('a', { href: 'index.html#profile', className: 'text-gray-600 hover:text-blue-600' }, 'Profile'),
+                  React.createElement('a', { href: '#', className: 'text-blue-600 font-medium' }, 'Badminton'),
+                  React.createElement('a', { href: 'index.html#sports', className: 'text-gray-600 hover:text-blue-600' }, 'Sports'),
+                  React.createElement('a', { href: 'index.html#academics', className: 'text-gray-600 hover:text-blue-600' }, 'Academics')
+                ]
+              )
+            ]
+          )
+        )
+      );
+    }
+
+    function TypewriterText({ text, delay = 0 }) {
+      const [displayText, setDisplayText] = React.useState('');
+      
+      React.useEffect(() => {
+        let i = 0;
+        const typing = setInterval(() => {
+          if (i < text.length) {
+            setDisplayText(text.substring(0, i + 1));
+            i++;
+          } else {
+            clearInterval(typing);
+          }
+        }, 20);
+        
+        return () => clearInterval(typing);
+      }, [text]);
+      
+      return React.createElement(
+        'span',
+        { className: 'typewriter', style: { animationDelay: `${delay}s` } },
+        displayText
+      );
+    }
+
+    function BadmintonAchievements() {
+      const achievements = [
+        { 
+          year: '2023', 
+          event: 'Pilot Pen Cup', 
+          detail: 'Represented school at a local-level tournament',
+          highlight: false
+        },
+        { 
+          year: '2024', 
+          event: 'Yuhua CSN Badminton Competition', 
+          detail: 'Represented Singapore Schools, won Bronze Award',
+          highlight: true 
+        },
+        // (Add all other achievements from your list)
+      ];
+
+      return React.createElement(
+        'section',
+        { className: 'py-16 bg-white' },
+        React.createElement(
+          'div',
+          { className: 'max-w-4xl mx-auto px-4' },
+          [
+            React.createElement(
+              'div',
+              { className: 'text-center mb-12 animate-fadeInUp', style: { animationDelay: '0.2s' } },
+              [
+                React.createElement(
+                  'h1',
+                  { className: 'text-4xl font-bold text-gray-900 mb-6' },
+                  React.createElement(TypewriterText, { text: '🏸 Badminton Journey' })
+                ),
+                React.createElement(
+                  'p',
+                  { className: 'text-xl text-gray-600' },
+                  'Representing school at various competitions since 2022'
+                )
+              ]
+            ),
+            
+            // Timeline of achievements
+            React.createElement(
+              'div',
+              { className: 'space-y-8' },
+              achievements.map((item, index) => 
+                React.createElement(
+                  'div',
+                  { 
+                    key: index,
+                    className: `timeline-item animate-fadeInUp`,
+                    style: { animationDelay: `${0.3 + index * 0.1}s` }
+                  },
+                  [
+                    React.createElement('div', { className: 'timeline-dot' }),
+                    React.createElement(
+                      'div',
+                      { className: 'bg-gray-50 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow' },
+                      [
+                        React.createElement(
+                          'div',
+                          { className: 'flex justify-between items-start mb-2' },
+                          [
+                            React.createElement('span', { className: 'font-bold text-blue-600' }, item.year),
+                            item.highlight && React.createElement(
+                              'span',
+                              { className: 'bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium' },
+                              '🏆 Highlight'
+                            )
+                          ]
+                        ),
+                        React.createElement('h3', { className: 'text-xl font-semibold mb-1' }, item.event),
+                        React.createElement('p', { className: 'text-gray-700' }, item.detail)
+                      ]
+                    )
+                  ]
+                )
+              )
+            ),
+            
+            // Key Learnings Section
+            React.createElement(
+              'div',
+              { className: 'mt-16 bg-blue-50 rounded-xl p-8 animate-fadeInUp', style: { animationDelay: `${0.3 + achievements.length * 0.1}s` } },
+              [
+                React.createElement('h3', { className: 'text-2xl font-bold text-center mb-6' }, 'Key Learnings'),
+                React.createElement(
+                  'p',
+                  { className: 'text-gray-700 text-lg leading-relaxed max-w-2xl mx-auto' },
+                  'Through years of competitive badminton, I have developed resilience, strategic thinking, and the value of consistent hard work. These experiences have shaped my approach to both academic and personal challenges.'
+                )
+              ]
+            )
+          ]
+        )
+      );
+    }
+
+    function App() {
+      return React.createElement(
+        React.Fragment,
+        null,
+        [
+          React.createElement(Header, null),
+          React.createElement(BadmintonAchievements, null),
+          React.createElement(
+            'footer',
+            { className: 'bg-gray-900 text-white py-8' },
+            React.createElement(
+              'div',
+              { className: 'max-w-6xl mx-auto px-4 text-center' },
+              React.createElement('p', { className: 'text-gray-400' }, '© 2024 Lathish - EAE Portfolio')
+            )
+          )
+        ]
+      );
+    }
+
+    // ================== Render ==================
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(App, null));
+  </script>
+</body>
+</html>
