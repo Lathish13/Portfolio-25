@@ -29,13 +29,12 @@
       from, to { border-color: transparent }
       50% { border-color: inherit; }
     }
-    /* achievement-card CSS removed as it's not applied in the provided structure */
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script>
-    // ================== Components ==================
+    // ================== Components (Header, Footer, TypewriterText - remain the same) ==================
 
     function Header() {
       return React.createElement(
@@ -166,20 +165,28 @@
             ),
             React.createElement(
               'h2',
-              { className: 'text-4xl font-extrabold text-gray-900 mb-4' },
+              { className: 'text-4xl font-extrabold text-gray-900 mb-4 flex justify-center items-center' },
               ['Hi, I\'m ', React.createElement(TypewriterText, { text: 'Lathish', speed: 100, initialDelay: 500 })]
             ),
-            React.createElement(
+            React.createElement( // Updated paragraph with school info
               'p',
-              { className: 'text-xl text-gray-700 leading-relaxed mb-6' },
-              'Passionate about sports, technology, and continuous learning. This portfolio showcases my journey and achievements in various domains.'
+              { className: 'text-xl text-gray-700 leading-relaxed mb-4' }, // Adjusted mb-6 to mb-4 for new content
+              'Passionate about sports, technology, and continuous learning. I am currently pursuing my studies at ',
+              React.createElement('span', { className: 'font-semibold text-blue-700' }, 'School of Science and Technology, Singapore'),
+              '.'
+            ),
+            React.createElement( // New paragraph for subjects
+              'p',
+              { className: 'text-lg text-gray-600 leading-relaxed mb-6' },
+              'My current subjects include: ',
+              React.createElement('span', { className: 'font-medium' }, 'English, Tamil, Mathematics, Additional Mathematics, Pure Chemistry, Pure Physics, Humanities (Social Studies + Geography), and Computing.'),
             ),
             React.createElement(
               'div',
               { className: 'flex justify-center space-x-6 text-gray-600 text-lg' },
               [
                 React.createElement('p', null, '📍 Singapore'),
-                React.createElement('p', null, '🎓 Student'),
+                React.createElement('p', null, '🎓 Student'), 
                 React.createElement('p', null, '🏸 Badminton Enthusiast')
               ]
             )
@@ -231,6 +238,13 @@
               React.createElement(ProfileSection, null),
               React.createElement(BadmintonPreview, null),
               // (Other sections like Sports, Academics would go here, defined as React components)
+              // Placeholder for Academics section if you want to add content directly on homepage later:
+              React.createElement('section', { id: 'academics', className: 'py-12 bg-gray-50' },
+                React.createElement('div', { className: 'max-w-6xl mx-auto px-4 text-center' },
+                  React.createElement('h2', { className: 'text-3xl font-bold text-gray-900 mb-4' }, '📚 Academic Journey'),
+                  React.createElement('p', { className: 'text-lg text-gray-600' }, 'Details about academic projects, achievements, and courses will be added here.')
+                )
+              )
             ]
           ),
           React.createElement(Footer, null)
