@@ -21,20 +21,22 @@
       overflow: hidden;
       display: inline-block;
     }
-    .achievement-card { 
-      transition: all 0.3s ease; 
-      transform: perspective(1000px) rotateX(0deg);
+    /* Blinking cursor for typewriter effect */
+    .typewriter .caret {
+      animation: blink-caret 0.75s step-end infinite;
     }
-    .achievement-card:hover {
-      transform: perspective(1000px) rotateX(5deg);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: inherit; }
     }
+    /* achievement-card CSS removed as it's not applied in the provided structure */
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script>
     // ================== Components ==================
+
     function Header() {
       return React.createElement(
         'header',
@@ -47,8 +49,8 @@
             { className: 'flex items-center justify-between' },
             [
               React.createElement(
-                'div',
-                { className: 'flex items-center space-x-3' },
+                'a', // Use an 'a' tag to make the logo clickable back to home
+                { href: 'index.html', className: 'flex items-center space-x-3' },
                 [
                   React.createElement(
                     'div',
@@ -74,7 +76,7 @@
                     className: 'text-gray-600 hover:text-blue-600 transition-colors'
                   }, 'Profile'),
                   React.createElement('a', { 
-                    href: 'badminton.html',  // Link to the new page
+                    href: 'badminton.html', 
                     className: 'text-gray-600 hover:text-blue-600 transition-colors font-medium' 
                   }, 'Badminton'),
                   React.createElement('a', { 
@@ -89,6 +91,99 @@
               )
             ]
           )
+        )
+      );
+    }
+
+    function Footer() {
+      return React.createElement(
+        'footer',
+        { className: 'bg-gray-900 text-white py-8' },
+        React.createElement(
+          'div',
+          { className: 'max-w-6xl mx-auto px-4 text-center' },
+          React.createElement('p', { className: 'text-gray-400' }, '© 2024 Lathish - EAE Portfolio')
+        )
+      );
+    }
+
+    function TypewriterText({ text, speed = 20, initialDelay = 0 }) {
+      const [displayText, setDisplayText] = React.useState('');
+      const [isTyping, setIsTyping] = React.useState(false);
+      
+      React.useEffect(() => {
+        let timeoutId;
+        let intervalId;
+
+        const startTyping = () => {
+          setIsTyping(true);
+          let i = 0;
+          intervalId = setInterval(() => {
+            if (i < text.length) {
+              setDisplayText(text.substring(0, i + 1));
+              i++;
+            } else {
+              clearInterval(intervalId);
+              setIsTyping(false);
+            }
+          }, speed);
+        };
+
+        if (initialDelay > 0) {
+          timeoutId = setTimeout(startTyping, initialDelay);
+        } else {
+          startTyping();
+        }
+        
+        return () => {
+          clearTimeout(timeoutId);
+          clearInterval(intervalId);
+        };
+      }, [text, speed, initialDelay]);
+      
+      return React.createElement(
+        'span',
+        { className: 'typewriter' },
+        [
+          displayText,
+          isTyping && React.createElement('span', { className: 'caret' }, '|') // Blinking cursor
+        ]
+      );
+    }
+
+    function ProfileSection() {
+      return React.createElement(
+        'section',
+        { id: 'profile', className: 'py-16 bg-gradient-to-r from-blue-50 to-indigo-50 text-center fade-in' },
+        React.createElement(
+          'div',
+          { className: 'max-w-4xl mx-auto px-4' },
+          [
+            React.createElement(
+              'div',
+              { className: 'w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg border-4 border-blue-200' },
+              React.createElement('img', { src: 'https://via.placeholder.com/128', alt: "Lathish's Profile", className: 'w-full h-full object-cover' })
+            ),
+            React.createElement(
+              'h2',
+              { className: 'text-4xl font-extrabold text-gray-900 mb-4' },
+              ['Hi, I\'m ', React.createElement(TypewriterText, { text: 'Lathish', speed: 100, initialDelay: 500 })]
+            ),
+            React.createElement(
+              'p',
+              { className: 'text-xl text-gray-700 leading-relaxed mb-6' },
+              'Passionate about sports, technology, and continuous learning. This portfolio showcases my journey and achievements in various domains.'
+            ),
+            React.createElement(
+              'div',
+              { className: 'flex justify-center space-x-6 text-gray-600 text-lg' },
+              [
+                React.createElement('p', null, '📍 Singapore'),
+                React.createElement('p', null, '🎓 Student'),
+                React.createElement('p', null, '🏸 Badminton Enthusiast')
+              ]
+            )
+          ]
         )
       );
     }
@@ -135,15 +230,13 @@
             [
               React.createElement(ProfileSection, null),
               React.createElement(BadmintonPreview, null),
-              // (Other sections would go here)
+              // (Other sections like Sports, Academics would go here, defined as React components)
             ]
           ),
           React.createElement(Footer, null)
         ]
       );
     }
-
-    // (Include your existing ProfileSection and Footer components here)
 
     // ================== Render ==================
     const root = ReactDOM.createRoot(document.getElementById('root'));
