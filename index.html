@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lathish - EAE Portfolio</title>
+  <meta name="description" content="Lathish's Early Admission Exercise Portfolio">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .achievement-card { background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1.5rem; transition: box-shadow 0.3s; }
+    .achievement-card:hover { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    .sport-badge { display: inline-flex; align-items: center; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; }
+    .award-highlight { background: linear-gradient(to right, #f59e0b, #f97316); color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
+    .text-gradient { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    // ================== ErrorBoundary ==================
+    class ErrorBoundary extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { hasError: false, error: null };
+      }
+
+      static getDerivedStateFromError(error) {
+        return { hasError: true, error };
+      }
+
+      componentDidCatch(error, errorInfo) {
+        console.error('ErrorBoundary caught an error:', error, errorInfo.componentStack);
+      }
+
+      render() {
+        if (this.state.hasError) {
+          return React.createElement(
+            'div',
+            { className: 'min-h-screen flex items-center justify-center bg-gray-50' },
+            React.createElement(
+              'div',
+              { className: 'text-center' },
+              [
+                React.createElement('h1', { className: 'text-2xl font-bold text-gray-900 mb-4' }, 'Something went wrong'),
+                React.createElement('p', { className: 'text-gray-600 mb-4' }, 'We\'re sorry, but something unexpected happened.'),
+                React.createElement(
+                  'button',
+                  { onClick: () => window.location.reload(), className: 'btn btn-black' },
+                  'Reload Page'
+                )
+              ]
+            )
+          );
+        }
+        return this.props.children;
+      }
+    }
+
+    // ================== Components ==================
+    function Header() {
+      return React.createElement(
+        'header',
+        { className: 'bg-white shadow-sm sticky top-0 z-50', 'data-name': 'header' },
+        React.createElement(
+          'div',
+          { className: 'max-w-6xl mx-auto px-4 py-4' },
+          React.createElement(
+            'div',
+            { className: 'flex items-center justify-between' },
+            [
+              React.createElement(
+                'div',
+                { className: 'flex items-center space-x-3' },
+                [
+                  React.createElement(
+                    'div',
+                    { className: 'w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center' },
+                    React.createElement('span', { className: 'text-white font-bold text-xl' }, 'L')
+                  ),
+                  React.createElement(
+                    'div',
+                    null,
+                    [
+                      React.createElement('h1', { className: 'text-2xl font-bold text-gray-900' }, 'Lathish'),
+                      React.createElement('p', { className: 'text-sm text-gray-600' }, 'EAE Portfolio')
+                    ]
+                  )
+                ]
+              ),
+              React.createElement(
+                'nav',
+                { className: 'hidden md:flex space-x-6' },
+                [
+                  React.createElement('a', { href: '#profile', className: 'text-gray-600 hover:text-blue-600 transition-colors' }, 'Profile'),
+                  React.createElement('a', { href: '#badminton', className: 'text-gray-600 hover:text-blue-600 transition-colors' }, 'Badminton'),
+                  React.createElement('a', { href: '#sports', className: 'text-gray-600 hover:text-blue-600 transition-colors' }, 'Sports'),
+                  React.createElement('a', { href: '#academics', className: 'text-gray-600 hover:text-blue-600 transition-colors' }, 'Academics')
+                ]
+              )
+            ]
+          )
+        )
+      );
+    }
+
+    function ProfileSection() {
+      return React.createElement(
+        'section',
+        { id: 'profile', className: 'py-16 bg-gradient-to-br from-blue-50 to-indigo-100', 'data-name': 'profile-section' },
+        React.createElement(
+          'div',
+          { className: 'max-w-6xl mx-auto px-4' },
+          [
+            React.createElement(
+              'div',
+              { className: 'text-center mb-12' },
+              [
+                React.createElement(
+                  'div',
+                  { className: 'w-32 h-32 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center' },
+                  React.createElement('span', { className: 'text-white text-4xl font-bold' }, 'L')
+                ),
+                React.createElement('h1', { className: 'text-4xl font-bold text-gray-900 mb-4' }, 'Lathish'),
+                React.createElement('h2', { className: 'text-xl text-gradient mb-6' }, 'Student at School of Science and Technology, Singapore'),
+                React.createElement(
+                  'div',
+                  { className: 'max-w-4xl mx-auto' },
+                  React.createElement('p', { className: 'text-lg text-gray-700 leading-relaxed' }, 'I am a passionate student with a strong academic focus in Mathematics, Physics, and Chemistry. I actively seek opportunities to apply my skills in technology and problem-solving, both academically and through co-curricular activities. My leadership, teamwork, and perseverance shine through my extensive sports involvement and academic project work.')
+                )
+              ]
+            ),
+            React.createElement(
+              'div',
+              { className: 'grid md:grid-cols-3 gap-8' },
+              [
+                createAchievementCard('trophy', 'blue', 'Sports Excellence', 'Multiple championships and awards in badminton, handball, basketball, and football'),
+                createAchievementCard('book-open', 'green', 'Academic Achievement', 'Excellence in STEM subjects and international coding competitions'),
+                createAchievementCard('users', 'purple', 'Leadership', 'Team captain roles and representation at various school events')
+              ]
+            )
+          ]
+        )
+      );
+    }
+
+    function createAchievementCard(icon, color, title, description) {
+      return React.createElement(
+        'div',
+        { className: 'achievement-card text-center' },
+        [
+          React.createElement(
+            'div',
+            { className: `w-16 h-16 bg-${color}-100 rounded-full mx-auto mb-4 flex items-center justify-center` },
+            React.createElement('div', { className: `icon-${icon} text-2xl text-${color}-600` })
+          ),
+          React.createElement('h3', { className: 'text-xl font-semibold mb-2' }, title),
+          React.createElement('p', { className: 'text-gray-600' }, description)
+        ]
+      );
+    }
+
+    // ================== App ==================
+    function App() {
+      return React.createElement(
+        'div',
+        { className: 'min-h-screen bg-gray-50', 'data-name': 'app' },
+        [
+          React.createElement(Header, null),
+          React.createElement(
+            'main',
+            null,
+            [
+              React.createElement(ProfileSection, null),
+              // Add other sections here (BadmintonSection, SportsSection, AcademicSection)
+              // Example: React.createElement(BadmintonSection, null)
+            ]
+          ),
+          React.createElement(
+            'footer',
+            { className: 'bg-gray-900 text-white py-8' },
+            React.createElement(
+              'div',
+              { className: 'max-w-6xl mx-auto px-4 text-center' },
+              React.createElement('p', { className: 'text-gray-400' }, '© 2024 Lathish - EAE Portfolio. Showcasing dedication, achievement, and growth.')
+            )
+          )
+        ]
+      );
+    }
+
+    // ================== Render ==================
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      React.createElement(
+        ErrorBoundary,
+        null,
+        React.createElement(App, null)
+      )
+    );
+  </script>
+</body>
+</html>
