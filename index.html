@@ -166,16 +166,20 @@
             React.createElement(
               'h2',
               { className: 'text-4xl font-extrabold text-gray-900 mb-4 flex justify-center items-center' },
-              ['Hi, I\'m ', React.createElement(TypewriterText, { text: 'Lathish', speed: 100, initialDelay: 500 })]
+              [
+                // Explicitly adding a space here as a string element
+                'Hi, I\'m ', 
+                React.createElement(TypewriterText, { text: 'Lathish', speed: 100, initialDelay: 500 })
+              ]
             ),
-            React.createElement( // Updated paragraph with school info
+            React.createElement(
               'p',
-              { className: 'text-xl text-gray-700 leading-relaxed mb-4' }, // Adjusted mb-6 to mb-4 for new content
+              { className: 'text-xl text-gray-700 leading-relaxed mb-4' },
               'Passionate about sports, technology, and continuous learning. I am currently pursuing my studies at ',
               React.createElement('span', { className: 'font-semibold text-blue-700' }, 'School of Science and Technology, Singapore'),
               '.'
             ),
-            React.createElement( // New paragraph for subjects
+            React.createElement(
               'p',
               { className: 'text-lg text-gray-600 leading-relaxed mb-6' },
               'My current subjects include: ',
@@ -237,12 +241,28 @@
             [
               React.createElement(ProfileSection, null),
               React.createElement(BadmintonPreview, null),
-              // (Other sections like Sports, Academics would go here, defined as React components)
-              // Placeholder for Academics section if you want to add content directly on homepage later:
-              React.createElement('section', { id: 'academics', className: 'py-12 bg-gray-50' },
+              // Academics section with embedded map
+              React.createElement('section', { id: 'academics', className: 'py-12 bg-white' },
                 React.createElement('div', { className: 'max-w-6xl mx-auto px-4 text-center' },
-                  React.createElement('h2', { className: 'text-3xl font-bold text-gray-900 mb-4' }, '📚 Academic Journey'),
-                  React.createElement('p', { className: 'text-lg text-gray-600' }, 'Details about academic projects, achievements, and courses will be added here.')
+                  [
+                    React.createElement('h2', { className: 'text-3xl font-bold text-gray-900 mb-4' }, '📚 Academic Journey'),
+                    React.createElement('p', { className: 'text-lg text-gray-600 mb-8' }, 'Learn more about my academic institution and its location.'),
+                    React.createElement('div', { className: 'relative overflow-hidden rounded-lg shadow-lg mb-8 mx-auto', style: { paddingBottom: '56.25%', height: 0, maxWidth: '800px' } }, // Responsive embed container
+                      React.createElement(
+                        'iframe',
+                        {
+                          src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.759902640283!2d103.77169467475143!3d1.313653199679126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a3e1f0e4b7b%3A0x6b4f7a5d9a9f2b1!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1719600000000!5m2!1sen!2ssg', // Google Maps embed URL
+                          width: '100%',
+                          height: '100%',
+                          style: { border: 0, position: 'absolute', top: 0, left: 0 },
+                          allowFullScreen: '',
+                          loading: 'lazy',
+                          referrerPolicy: 'no-referrer-when-downgrade'
+                        }
+                      )
+                    ),
+                    React.createElement('p', { className: 'text-md text-gray-500' }, 'School of Science and Technology, Singapore - 1 Technology Drive, Singapore 138572')
+                  ]
                 )
               )
             ]
