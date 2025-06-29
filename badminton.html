@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,33 +10,49 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script>
+    tailwind.theme = {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+        },
+      }
+    }
+  </script>
 
     <style>
-        /* Set the default font for the page */
+        /* --- Base & Animation Styles --- */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        
+        /* FIX: New animation for hero content on load */
+        @keyframes hero-fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-hero-fade-in {
+            animation: hero-fade-in 1s ease-out 0.3s forwards;
         }
 
-        /* --- General Animations --- */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* --- Typewriter Animation --- */
-        .typewriter-container {
-            display: inline-flex;
-            align-items: baseline;
-        }
         .typewriter-caret {
             width: 3px;
-            height: 1.1em; /* Match the font size */
+            height: 1.1em;
             background-color: currentColor;
-            margin-left: 4px;
+            margin-left: 8px;
             animation: blink-caret 0.75s step-end infinite;
         }
         @keyframes blink-caret {
@@ -44,22 +60,6 @@
             50% { background-color: currentColor; }
         }
 
-        /* --- Floating Icons Animation (from homepage) --- */
-        .floating-icon-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: 1; /* Behind hero content */
-        }
-        .floating-icon {
-            position: absolute;
-            will-change: transform;
-            transition: transform 0.1s linear;
-        }
-        
         /* --- Timeline Styling --- */
         .timeline::before {
             content: '';
@@ -69,196 +69,311 @@
             top: 0;
             height: 100%;
             width: 3px;
-            background-color: #e5e7eb; /* gray-200 */
+            background-color: #e2e8f0; /* slate-200 */
+        }
+        @media (max-width: 768px) {
+            .timeline::before {
+                left: 20px;
+            }
         }
         
-        .timeline-item-container {
+        /* --- Hero Section Specific Styles --- */
+        #hero {
             position: relative;
-            width: 50%;
+            overflow: hidden;
+            background-color: #020617; /* slate-950 */
         }
-
-        .timeline-item-container:nth-child(odd) {
-            left: 0;
-            padding-right: 2rem;
-        }
-
-        .timeline-item-container:nth-child(even) {
-            left: 50%;
-            padding-left: 2rem;
-        }
-
-        .timeline-dot {
-            content: '';
+        .hero-bg {
             position: absolute;
-            top: 0.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: white;
-            border: 4px solid #3b82f6; /* blue-600 */
-            z-index: 10;
+            top: -10%; right: -10%; bottom: -10%; left: -10%;
+            width: 120%;
+            height: 120%;
+            background-image: url('https://images.unsplash.com/photo-1593787416399-e68e3c4a1b1a?q=80&w=2940&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1;
         }
-
-        .timeline-item-container:nth-child(odd) .timeline-content::after {
-            content: " ";
+        .hero-overlay {
             position: absolute;
-            top: 0.75rem;
-            right: -8px;
-            border-width: 8px;
-            border-style: solid;
-            border-color: transparent transparent transparent white;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background-color: rgba(2, 6, 23, 0.7); /* slate-950 with 70% opacity */
+            backdrop-filter: blur(4px);
+            z-index: 2;
         }
-
-        .timeline-item-container:nth-child(even) .timeline-content::after {
-            content: " ";
-            position: absolute;
-            top: 0.75rem;
-            left: -8px;
-            border-width: 8px;
-            border-style: solid;
-            border-color: transparent white transparent transparent;
+        .hero-content {
+            position: relative;
+            z-index: 3;
         }
         
-        .timeline-content {
-             opacity: 0;
-             transform: translateY(20px);
-             animation: fadeIn 0.8s ease-out forwards;
+        /* Scroll Down Arrow Animation */
+        .scroll-down-arrow {
+            animation: bounce 2s infinite;
         }
-
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
 
     <script type="text/babel">
-        // --- Reusable Components (from homepage) ---
+        // --- Custom Hooks ---
+        const useIntersectionObserver = (options) => {
+            const containerRef = React.useRef(null);
+            React.useEffect(() => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, options);
+                const elements = containerRef.current.querySelectorAll('.scroll-reveal');
+                elements.forEach(el => observer.observe(el));
+                return () => observer.disconnect();
+            }, [options]);
+            return containerRef;
+        };
+        
+        const useMousePosition = () => {
+            const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
+            React.useEffect(() => {
+                const updateMousePosition = ev => setMousePosition({ x: ev.clientX, y: ev.clientY });
+                window.addEventListener('mousemove', updateMousePosition);
+                return () => window.removeEventListener('mousemove', updateMousePosition);
+            }, []);
+            return mousePosition;
+        };
 
+        // --- Reusable Components ---
         function Header() {
+            // ... (Header code remains unchanged)
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+            const navLinks = [
+                { href: "index.html#profile", text: "Profile" },
+                { href: "index.html#interests", text: "Interests" },
+                { href: "index.html#academics", text: "Academics" },
+                { href: "badminton.html", text: "Badminton" },
+            ];
             return (
-                <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                        <a href="index.html" className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
-                                <span className="text-white font-bold text-2xl">L</span>
+                <header className="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-20">
+                            <a href="index.html" className="flex items-center space-x-3 group">
+                                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md transition-all duration-300 group-hover:bg-blue-700 group-hover:scale-105">
+                                    <span className="text-white font-black text-2xl">L</span>
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold text-slate-900">Lathish</h1>
+                                    <p className="text-sm text-slate-500">EAE Portfolio</p>
+                                </div>
+                            </a>
+                            <nav className="hidden md:flex items-center space-x-2">
+                                {navLinks.map(link => (
+                                    <a key={link.text} href={link.href} className="text-slate-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50 font-medium">
+                                        {link.text}
+                                    </a>
+                                ))}
+                            </nav>
+                            <div className="md:hidden">
+                                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        {isMobileMenuOpen ? (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                        ) : (
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+                                        )}
+                                    </svg>
+                                </button>
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Lathish</h1>
-                                <p className="text-sm text-gray-600">EAE Portfolio</p>
-                            </div>
-                        </a>
-                        <nav className="hidden md:flex items-center space-x-8 text-md font-medium">
-    <a href="index.html#profile" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Profile</a>
-    <a href="index.html#interests" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Interests</a>
-    <a href="index.html#academics" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Academics</a>
-    <a href="badminton.html" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Badminton</a>
-</nav>
+                        </div>
                     </div>
+                    {isMobileMenuOpen && (
+                        <div className="md:hidden bg-white border-t border-slate-200">
+                            <nav className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+                                {navLinks.map(link => (
+                                    <a key={link.text} href={link.href} className="block text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium">
+                                        {link.text}
+                                    </a>
+                                ))}
+                            </nav>
+                        </div>
+                    )}
                 </header>
             );
         }
 
         function Footer() {
-            return (
-                <footer className="bg-gray-800 text-white py-8">
-                    <div className="text-center text-gray-400">
+             return (
+                <footer className="bg-slate-900 text-white py-12">
+                    <div className="text-center text-slate-400">
                         © {new Date().getFullYear()} Lathish - EAE Portfolio
                     </div>
                 </footer>
             );
         }
 
-        function TypewriterText({ text, speed = 100, initialDelay = 500 }) {
+        function TypewriterText({ text, speed = 100, initialDelay = 500, className = '' }) {
             const [displayText, setDisplayText] = React.useState('');
             const [showCaret, setShowCaret] = React.useState(true);
-
             React.useEffect(() => {
                 const startTyping = () => {
                     let i = 0;
                     const interval = setInterval(() => {
                         if (i < text.length) {
-                            setDisplayText(text.substring(0, ++i));
+                            setDisplayText(prev => text.substring(0, i + 1));
+                            i++;
                         } else {
                             clearInterval(interval);
                             setTimeout(() => setShowCaret(false), 2000);
                         }
                     }, speed);
                 };
-
                 const delay = setTimeout(startTyping, initialDelay);
                 return () => clearTimeout(delay);
             }, [text, speed, initialDelay]);
-
             return (
-                <span className="typewriter-container text-blue-600">
-                    {displayText}
+                <span className={`inline-flex items-baseline ${className}`}>
+                    <span>{displayText}</span>
                     {showCaret && <span className="typewriter-caret"></span>}
                 </span>
             );
         }
 
-        // Adapted FloatingIcons for this page
-        function FloatingIcons() {
-             const icons = ['🏸', '🥇', '🏆', '👟', '💪'];
-             const numIcons = 25;
-
-             const iconData = React.useMemo(() => Array.from({ length: numIcons }).map((_, i) => ({
-                 id: i,
-                 icon: icons[Math.floor(Math.random() * icons.length)],
-                 x: Math.random() * 100, // as percentage
-                 y: Math.random() * 100, // as percentage
-                 size: Math.random() * 1.5 + 1.5, // in rem
-                 opacity: Math.random() * 0.5 + 0.2, // between 0.2 and 0.7
-                 animationDuration: Math.random() * 20 + 15, // 15-35 seconds
-                 animationDelay: Math.random() * -15, // start at random points
-             })), []);
-
+        function GalleryModal({ photo, onClose }) {
+             React.useEffect(() => {
+                const handleEsc = (event) => {
+                    if (event.keyCode === 27) onClose();
+                };
+                window.addEventListener('keydown', handleEsc);
+                return () => window.removeEventListener('keydown', handleEsc);
+            }, [onClose]);
+            if (!photo) return null;
             return (
-                <div className="floating-icon-container">
-                    {iconData.map(data => (
-                        <div
-                            key={data.id}
-                            className="floating-icon"
-                            style={{
-                                left: `${data.x}%`,
-                                top: `${data.y}%`,
-                                fontSize: `${data.size}rem`,
-                                opacity: data.opacity,
-                                animation: `subtle-float ${data.animationDuration}s ease-in-out infinite`,
-                                animationDelay: `${data.animationDelay}s`
-                            }}
-                        >
-                            {data.icon}
-                        </div>
-                    ))}
+                <div 
+                    className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4 animate-[fadeIn_0.3s_ease]"
+                    onClick={onClose}
+                >
+                    <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
+                        <img src={photo.src} alt={photo.caption} className="w-full h-auto object-contain flex-shrink" style={{maxHeight: 'calc(90vh - 4rem)'}} />
+                        <p className="p-4 text-center text-slate-700 bg-slate-50 flex-shrink-0">{photo.caption}</p>
+                    </div>
+                     <button onClick={onClose} className="absolute top-4 right-4 text-white text-4xl font-bold">&times;</button>
+                </div>
+            );
+        }
+        
+        // --- Page Sections ---
+
+        function KeyHighlight({ icon, value, label }) {
+            return (
+                <div className="text-center">
+                    <div className="text-4xl text-blue-400 mb-2">{icon}</div>
+                    <div className="text-2xl font-bold text-white">{value}</div>
+                    <div className="text-sm text-slate-300 tracking-wider uppercase">{label}</div>
                 </div>
             );
         }
 
-        // --- Page Sections ---
-
         function BadmintonHeroSection() {
+            const { x, y } = useMousePosition();
+            const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
+
+            React.useEffect(() => {
+                const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+                window.addEventListener('resize', handleResize);
+                handleResize(); // Set initial size
+                return () => window.removeEventListener('resize', handleResize);
+            }, []);
+
+            const parallaxX = windowSize.width > 0 ? (x - windowSize.width / 2) / 40 : 0;
+            const parallaxY = windowSize.height > 0 ? (y - windowSize.height / 2) / 40 : 0;
+
+            const highlights = [
+                { icon: '🏆', value: 'Bronze', label: 'Yuhua CSN 2024' },
+                { icon: '🗓️', value: '4+', label: 'Years Experience' },
+                { icon: '🏅', value: '10+', label: 'Competitions' },
+            ];
+
             return (
-                <section id="hero" className="relative py-20 sm:py-28 text-center bg-white overflow-hidden">
-                    <FloatingIcons />
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
-                        <div className="fade-in">
-                             <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 flex items-center justify-center flex-wrap gap-x-3 gap-y-2">
-                                <span>My</span>
-                                <TypewriterText text="Badminton Journey" speed={100} initialDelay={500} />
-                            </h2>
-                            <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-                                Chronicling my dedication, growth, and achievements in competitive badminton.
-                            </p>
+                <section id="hero" className="h-screen flex flex-col justify-center items-center text-center text-white p-4">
+                    <div className="hero-bg" style={{ transform: `translate(${parallaxX}px, ${parallaxY}px)` }}></div>
+                    <div className="hero-overlay"></div>
+                    
+                    <div className="hero-content flex flex-col h-full justify-center">
+                        <div className="flex-grow flex flex-col justify-center items-center">
+                            {/* FIX: Replaced 'scroll-reveal' with a new animation class that works on load */}
+                            <div className="animate-hero-fade-in">
+                                <h1 
+                                    className="text-5xl md:text-7xl font-black tracking-tight"
+                                    style={{textShadow: '0px 4px 15px rgba(0, 0, 0, 0.4)'}}
+                                >
+                                    My <TypewriterText text="Badminton Journey" speed={80} initialDelay={1000} className="text-blue-400" />
+                                </h1>
+                                <p className="text-xl text-slate-300 max-w-2xl mx-auto mt-6" style={{textShadow: '0px 2px 8px rgba(0, 0, 0, 0.5)'}}>
+                                    Chronicling my dedication, growth, and achievements in competitive badminton.
+                                </p>
+                            </div>
+                            
+                            <div className="animate-hero-fade-in" style={{ animationDelay: '0.6s' }}>
+                                <div className="grid grid-cols-3 gap-8 md:gap-16 max-w-3xl mx-auto mt-16">
+                                    {highlights.map(h => <KeyHighlight key={h.label} {...h} />)}
+                                </div>
+                            </div>
                         </div>
+
+                        <a href="#achievements" className="scroll-down-arrow flex-shrink-0 pb-8 animate-hero-fade-in" style={{ animationDelay: '1.2s' }}>
+                            <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </a>
                     </div>
                 </section>
             );
         }
+        
+        // --- AchievementsTimeline and other sections remain unchanged ---
+        function TimelineItem({ item, index }) {
+            const side = index % 2 === 0 ? 'md:pr-8 md:text-right' : 'md:pl-8';
+            const containerSide = index % 2 === 0 ? 'md:flex-row-reverse' : 'md:flex-row';
+
+            return (
+                <div className={`scroll-reveal flex items-center w-full mb-12 ${containerSide}`}>
+                    <div className={`w-full md:w-1/2 ${side}`}>
+                        <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-2xl hover:border-blue-500 hover:-translate-y-1 relative">
+                             {item.highlight && (
+                                <div className="absolute top-0 right-0 -mt-3 -mr-3 flex items-center justify-center w-12 h-12 bg-amber-400 rounded-full shadow-lg">
+                                    <span className="text-amber-900 text-2xl">🏆</span>
+                                </div>
+                            )}
+                            <p className="text-sm font-semibold text-blue-600 mb-1">{item.year}</p>
+                            <h3 className="text-xl font-bold text-slate-800 mb-2">{item.event}</h3>
+                            <p className="text-slate-600">{item.details}</p>
+                            {item.teacher !== 'N/A' && (
+                                <p className="text-sm text-slate-400 mt-4">Teacher-in-charge: <span className="font-medium text-slate-500">{item.teacher}</span></p>
+                            )}
+                        </div>
+                    </div>
+                    <div className="hidden md:flex w-12 h-12 rounded-full bg-white border-4 border-blue-600 items-center justify-center flex-shrink-0 z-10">
+                         <span className="text-blue-600 font-bold">{item.year.toString().slice(-2)}</span>
+                    </div>
+                    <div className="hidden md:block w-1/2"></div>
+                </div>
+            );
+        }
 
         function AchievementsTimeline() {
-            // Data extracted from the provided image
             const achievements = [
                 { year: 2022, event: 'NSG Badminton Championships C Division', details: 'Represented school at the West Zone local event.', teacher: 'N/A' },
                 { year: 2023, event: 'NSG Badminton Championships C Division', details: 'Represented CCA at an intra-school event.', teacher: 'N/A' },
@@ -271,37 +386,35 @@
                 { year: 2025, event: 'NSG Badminton Championships B Division', details: 'Represented CCA at an intra-school event.', teacher: 'Mr. Allan Low' },
                 { year: 2025, event: 'NSG Badminton Championships B Division', details: 'Represented school at the West Zone local event.', teacher: 'Mr. Allan Low' },
                 { year: 2025, event: 'West Active Cup Competition', details: 'Represented Singapore Schools at a local event.', teacher: 'Mr. Allan Low' },
-            ].sort((a, b) => a.year - b.year || a.event.localeCompare(b.event)); // Sort by year, then by event name
+            ].sort((a, b) => b.year - a.year || a.event.localeCompare(b.event));
 
+            const timelineRef = useIntersectionObserver({ threshold: 0.1 });
 
             return (
-                <section id="achievements" className="py-16 sm:py-20 bg-gray-50">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900">Timeline of Achievements</h2>
-                            <p className="text-lg text-gray-600 mt-2">A journey of perseverance and passion.</p>
+                <section id="achievements" className="py-20 sm:py-28 bg-slate-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Timeline of Achievements</h2>
+                            <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A journey of perseverance and passion, year by year.</p>
                         </div>
-
-                        <div className="relative flex flex-col items-center timeline">
-                            <div className="timeline-dot" style={{top: '0.5rem'}}></div>
-                            {achievements.map((item, index) => (
-                                <div key={index} className="timeline-item-container w-full mb-8 flex justify-center">
-                                    <div className="w-full">
-                                        <div 
-                                          className="relative timeline-content bg-white p-6 rounded-xl shadow-lg border border-gray-200/80 transition-all duration-300 hover:shadow-2xl hover:border-blue-500"
-                                          style={{ animationDelay: `${index * 150}ms` }}
-                                        >
-                                            {item.highlight && (
-                                                <span className="absolute top-0 right-0 mt-4 mr-4 bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">🏆 BRONZE</span>
-                                            )}
+                        <div ref={timelineRef} className="relative timeline">
+                             <div className="md:hidden space-y-12">
+                                {achievements.map((item, index) => (
+                                    <div key={index} className="scroll-reveal pl-12 relative">
+                                         <div className="absolute top-1 -left-1.5 w-6 h-6 rounded-full bg-white border-4 border-blue-600 z-10"></div>
+                                        <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80">
+                                            {item.highlight && <span className="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">🏆 BRONZE</span>}
                                             <p className="text-sm font-semibold text-blue-600 mb-1">{item.year}</p>
-                                            <h3 className="text-xl font-bold text-gray-800 mb-2">{item.event}</h3>
-                                            <p className="text-gray-600">{item.details}</p>
-                                            <p className="text-sm text-gray-400 mt-3">Teacher-in-charge: <span className="font-medium text-gray-500">{item.teacher}</span></p>
+                                            <h3 className="text-xl font-bold text-slate-800 mb-2">{item.event}</h3>
+                                            <p className="text-slate-600">{item.details}</p>
+                                            {item.teacher !== 'N/A' && <p className="text-sm text-slate-400 mt-4">Teacher-in-charge: <span className="font-medium text-slate-500">{item.teacher}</span></p>}
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+                            <div className="hidden md:block">
+                                {achievements.map((item, index) => <TimelineItem key={index} item={item} index={index} />)}
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -309,71 +422,51 @@
         }
 
         function PhotoGallery() {
-    // Replace with your actual image paths and captions
-    const photos = [
-        {
-            src: 'images/Yuhua CSN Award.jpeg',
-            caption: 'In the heat of the Yuhua CSN Competition 2024.'
-        },
-        {
-            src: 'images/Wyse Active Game.jpeg',
-            caption: 'Head 2 Head against a Malaysian player in the Wyse Active Tournament.'
-        },
-        {
-            src: 'images/NSG Miscellanous.jpeg',
-            caption: 'Taking part in NSG in another school venue'
-        },
-        {
-            src: 'images/2024 Graduation.jpeg',
-            caption: 'Sending off my seniors, 2024'
-        },
-        {
-            src: 'images/2025 Graduation.jpeg', 
-            caption: 'My send off from Badminton CCA'
-        },
-        {
-            src: 'images/NSG Games.jpeg', 
-            caption: 'A game where we came back from losing and won both sets, as a team.'
-        }
-    ];
+            const photos = [
+                { src: 'images/Yuhua CSN Award.jpeg', caption: 'In the heat of the Yuhua CSN Competition 2024.' },
+                { src: 'images/Wyse Active Game.jpeg', caption: 'Head to head against a Malaysian player in the Wyse Active Tournament.' },
+                { src: 'images/NSG Miscellanous.jpeg', caption: 'Taking part in NSG at another school venue.' },
+                { src: 'images/2024 Graduation.jpeg', caption: 'Sending off my seniors, 2024.' },
+                { src: 'images/2025 Graduation.jpeg', caption: 'My send-off from the Badminton CCA.' },
+                { src: 'images/NSG Games.jpeg', caption: 'A comeback victory, winning both sets as a team.' }
+            ];
+            const [selectedPhoto, setSelectedPhoto] = React.useState(null);
+            const galleryRef = useIntersectionObserver({ threshold: 0.1 });
 
-    return (
-        <section id="gallery" className="py-16 sm:py-20 bg-white">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-gray-900">Gallery</h2>
-                    <p className="text-lg text-gray-600 mt-2">A few moments from the court.</p>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {photos.map((photo, index) => (
-                        <div 
-                            key={index} 
-                            className="fade-in group overflow-hidden rounded-xl shadow-lg border border-gray-200/80" 
-                            style={{ animationDelay: `${index * 150}ms` }}
-                        >
-                            <div className="overflow-hidden">
-                                <img 
-                                    src={photo.src} 
-                                    alt={photo.caption} 
-                                    className="w-full h-56 object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-110" 
-                                />
-                            </div>
-                            <div className="p-4 bg-gray-50">
-                                <p className="text-gray-700 text-center">{photo.caption}</p>
-                            </div>
+            return (
+                <section id="gallery" className="py-20 sm:py-28 bg-white">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Gallery</h2>
+                            <p className="text-lg text-slate-600 mt-3">A few moments from the court.</p>
                         </div>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
-}
+                        <div ref={galleryRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {photos.map((photo, index) => (
+                                <div
+                                    key={index}
+                                    className="scroll-reveal group rounded-xl shadow-lg border border-slate-200/80 overflow-hidden cursor-pointer"
+                                    style={{ transitionDelay: `${index * 100}ms` }}
+                                    onClick={() => setSelectedPhoto(photo)}
+                                >
+                                    <div className="overflow-hidden">
+                                        <img src={photo.src} alt={photo.caption} className="w-full h-64 object-cover transform transition-all duration-500 ease-in-out group-hover:scale-110"/>
+                                    </div>
+                                    <div className="p-4 bg-slate-50">
+                                        <p className="text-slate-700 text-center truncate">{photo.caption}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <GalleryModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
+                </section>
+            );
+        }
 
         // --- Main App Component ---
-
         function App() {
             return (
-                <div>
+                <div id="app-container">
                     <Header />
                     <main>
                         <BadmintonHeroSection />
@@ -387,6 +480,10 @@
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
+
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
