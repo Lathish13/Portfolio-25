@@ -1,280 +1,355 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lathish - EAE Portfolio</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Animation styles */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
-    
-    .typewriter {
-      border-right: 3px solid;
-      white-space: nowrap;
-      overflow: hidden;
-      display: inline-block;
-    }
-    /* Blinking cursor for typewriter effect */
-    .typewriter .caret {
-      animation: blink-caret 0.75s step-end infinite;
-    }
-    @keyframes blink-caret {
-      from, to { border-color: transparent }
-      50% { border-color: inherit; }
-    }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
-  <script>
-    // ================== Components (Header, Footer, TypewriterText - remain the same) ==================
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lathish - EAE Portfolio</title>
+    <!-- React and ReactDOM Libraries -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel for JSX Transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    function Header() {
-      return React.createElement(
-        'header',
-        { className: 'bg-white shadow-sm sticky top-0 z-50' },
-        React.createElement(
-          'div',
-          { className: 'max-w-6xl mx-auto px-4 py-4' },
-          React.createElement(
-            'div',
-            { className: 'flex items-center justify-between' },
-            [
-              React.createElement(
-                'a', // Use an 'a' tag to make the logo clickable back to home
-                { href: 'index.html', className: 'flex items-center space-x-3' },
-                [
-                  React.createElement(
-                    'div',
-                    { className: 'w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center' },
-                    React.createElement('span', { className: 'text-white font-bold text-xl' }, 'L')
-                  ),
-                  React.createElement(
-                    'div',
-                    null,
-                    [
-                      React.createElement('h1', { className: 'text-2xl font-bold text-gray-900' }, 'Lathish'),
-                      React.createElement('p', { className: 'text-sm text-gray-600' }, 'EAE Portfolio')
-                    ]
-                  )
-                ]
-              ),
-              React.createElement(
-                'nav',
-                { className: 'hidden md:flex space-x-6' },
-                [
-                  React.createElement('a', { 
-                    href: '#profile', 
-                    className: 'text-gray-600 hover:text-blue-600 transition-colors'
-                  }, 'Profile'),
-                  React.createElement('a', { 
-                    href: 'badminton.html', 
-                    className: 'text-gray-600 hover:text-blue-600 transition-colors font-medium' 
-                  }, 'Badminton'),
-                  React.createElement('a', { 
-                    href: '#sports', 
-                    className: 'text-gray-600 hover:text-blue-600 transition-colors'
-                  }, 'Sports'),
-                  React.createElement('a', { 
-                    href: '#academics', 
-                    className: 'text-gray-600 hover:text-blue-600 transition-colors'
-                  }, 'Academics')
-                ]
-              )
-            ]
-          )
-        )
-      );
-    }
-
-    function Footer() {
-      return React.createElement(
-        'footer',
-        { className: 'bg-gray-900 text-white py-8' },
-        React.createElement(
-          'div',
-          { className: 'max-w-6xl mx-auto px-4 text-center' },
-          React.createElement('p', { className: 'text-gray-400' }, '© 2024 Lathish - EAE Portfolio')
-        )
-      );
-    }
-
-    function TypewriterText({ text, speed = 20, initialDelay = 0 }) {
-      const [displayText, setDisplayText] = React.useState('');
-      const [isTyping, setIsTyping] = React.useState(false);
-      
-      React.useEffect(() => {
-        let timeoutId;
-        let intervalId;
-
-        const startTyping = () => {
-          setIsTyping(true);
-          let i = 0;
-          intervalId = setInterval(() => {
-            if (i < text.length) {
-              setDisplayText(text.substring(0, i + 1));
-              i++;
-            } else {
-              clearInterval(intervalId);
-              setIsTyping(false);
-            }
-          }, speed);
-        };
-
-        if (initialDelay > 0) {
-          timeoutId = setTimeout(startTyping, initialDelay);
-        } else {
-          startTyping();
+    <style>
+        /* Set the default font for the page */
+        body {
+            font-family: 'Inter', sans-serif;
         }
-        
-        return () => {
-          clearTimeout(timeoutId);
-          clearInterval(intervalId);
-        };
-      }, [text, speed, initialDelay]);
-      
-      return React.createElement(
-        'span',
-        { className: 'typewriter' },
-        [
-          displayText,
-          isTyping && React.createElement('span', { className: 'caret' }, '|') // Blinking cursor
-        ]
-      );
-    }
 
-    function ProfileSection() {
-      return React.createElement(
-        'section',
-        { id: 'profile', className: 'py-16 bg-gradient-to-r from-blue-50 to-indigo-50 text-center fade-in' },
-        React.createElement(
-          'div',
-          { className: 'max-w-4xl mx-auto px-4' },
-          [
-            React.createElement(
-              'div',
-              { className: 'w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden shadow-lg border-4 border-blue-200' },
-              React.createElement('img', { src: 'https://via.placeholder.com/128', alt: "Lathish's Profile", className: 'w-full h-full object-cover' })
-            ),
-            React.createElement(
-              'h2',
-              { className: 'text-4xl font-extrabold text-gray-900 mb-4 flex justify-center items-center' },
-              [
-                // Explicitly adding a space here as a string element
-                'Hi, I\'m ', 
-                React.createElement(TypewriterText, { text: 'Lathish', speed: 100, initialDelay: 500 })
-              ]
-            ),
-            React.createElement(
-              'p',
-              { className: 'text-xl text-gray-700 leading-relaxed mb-4' },
-              'Passionate about sports, technology, and continuous learning. I am currently pursuing my studies at ',
-              React.createElement('span', { className: 'font-semibold text-blue-700' }, 'School of Science and Technology, Singapore'),
-              '.'
-            ),
-            React.createElement(
-              'p',
-              { className: 'text-lg text-gray-600 leading-relaxed mb-6' },
-              'My current subjects include: ',
-              React.createElement('span', { className: 'font-medium' }, 'English, Tamil, Mathematics, Additional Mathematics, Pure Chemistry, Pure Physics, Humanities (Social Studies + Geography), and Computing.'),
-            ),
-            React.createElement(
-              'div',
-              { className: 'flex justify-center space-x-6 text-gray-600 text-lg' },
-              [
-                React.createElement('p', null, '📍 Singapore'),
-                React.createElement('p', null, '🎓 Student'), 
-                React.createElement('p', null, '🏸 Badminton Enthusiast')
-              ]
-            )
-          ]
-        )
-      );
-    }
+        /* --- General Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
 
-    function BadmintonPreview() {
-      return React.createElement(
-        'section',
-        { className: 'py-12 bg-white fade-in', style: { animationDelay: '0.3s' } },
-        React.createElement(
-          'div',
-          { className: 'max-w-6xl mx-auto px-4' },
-          [
-            React.createElement(
-              'div',
-              { className: 'text-center mb-8' },
-              [
-                React.createElement('h2', { className: 'text-3xl font-bold text-gray-900 mb-4' }, '🏸 Badminton Highlights'),
-                React.createElement('p', { className: 'text-lg text-gray-600 max-w-3xl mx-auto' }, 
-                  'Consistent representation at school level with multiple achievements')
-              ]
-            ),
-            React.createElement(
-              'a',
-              { 
-                href: 'badminton.html',
-                className: 'mx-auto block w-fit px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md hover:shadow-lg'
-              },
-              'View Full Badminton Achievements →'
-            )
-          ]
-        )
-      );
-    }
+        /* --- Typewriter Animation --- */
+        .typewriter-container {
+            display: inline-flex;
+            align-items: baseline;
+        }
+        .typewriter-caret {
+            width: 3px;
+            height: 1.1em; /* Match the font size */
+            background-color: currentColor;
+            margin-left: 4px;
+            animation: blink-caret 0.75s step-end infinite;
+        }
+        @keyframes blink-caret {
+            from, to { background-color: transparent; }
+            50% { background-color: currentColor; }
+        }
 
-    function App() {
-      return React.createElement(
-        'div',
-        { className: 'min-h-screen bg-gray-50' },
-        [
-          React.createElement(Header, null),
-          React.createElement(
-            'main',
-            null,
-            [
-              React.createElement(ProfileSection, null),
-              React.createElement(BadmintonPreview, null),
-              // Academics section with embedded map
-              React.createElement('section', { id: 'academics', className: 'py-12 bg-white' },
-                React.createElement('div', { className: 'max-w-6xl mx-auto px-4 text-center' },
-                  [
-                    React.createElement('h2', { className: 'text-3xl font-bold text-gray-900 mb-4' }, '📚 Academic Journey'),
-                    React.createElement('p', { className: 'text-lg text-gray-600 mb-8' }, 'Learn more about my academic institution and its location.'),
-                    React.createElement('div', { className: 'relative overflow-hidden rounded-lg shadow-lg mb-8 mx-auto', style: { paddingBottom: '56.25%', height: 0, maxWidth: '800px' } }, // Responsive embed container
-                      React.createElement(
-                        'iframe',
-                        {
-                          src: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.759902640283!2d103.77169467475143!3d1.313653199679126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a3e1f0e4b7b%3A0x6b4f7a5d9a9f2b1!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1719600000000!5m2!1sen!2ssg', // Google Maps embed URL
-                          width: '100%',
-                          height: '100%',
-                          style: { border: 0, position: 'absolute', top: 0, left: 0 },
-                          allowFullScreen: '',
-                          loading: 'lazy',
-                          referrerPolicy: 'no-referrer-when-downgrade'
+        /* --- Floating Icons Animation --- */
+        .floating-icon-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; /* Place behind content */
+        }
+        .floating-icon {
+            position: absolute;
+            will-change: transform; /* Optimize for animation */
+            transition: transform 0.1s linear; /* Smooth movement */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- Reusable Components ---
+
+        function Header() {
+            return (
+                <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+                        <a href="index.html" className="flex items-center space-x-3">
+                            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
+                                <span className="text-white font-bold text-2xl">L</span>
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-900">Lathish</h1>
+                                <p className="text-sm text-gray-600">EAE Portfolio</p>
+                            </div>
+                        </a>
+                        <nav className="hidden md:flex items-center space-x-8 text-md font-medium">
+                            <a href="#profile" className="text-gray-600 hover:text-blue-600 transition-colors">Profile</a>
+                            <a href="#interests" className="text-gray-600 hover:text-blue-600 transition-colors">Interests</a>
+                            <a href="#academics" className="text-gray-600 hover:text-blue-600 transition-colors">Academics</a>
+                            <a href="badminton.html" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm">Badminton Page</a>
+                        </nav>
+                        {/* Mobile menu could be added here */}
+                    </div>
+                </header>
+            );
+        }
+
+        function Footer() {
+            return (
+                <footer className="bg-gray-800 text-white py-8">
+                    <div className="text-center text-gray-400">
+                        © {new Date().getFullYear()} Lathish - EAE Portfolio
+                    </div>
+                </footer>
+            );
+        }
+
+        function TypewriterText({ text, speed = 100, initialDelay = 500 }) {
+            const [displayText, setDisplayText] = React.useState('');
+            const [showCaret, setShowCaret] = React.useState(true);
+
+            React.useEffect(() => {
+                const startTyping = () => {
+                    let i = 0;
+                    const interval = setInterval(() => {
+                        if (i < text.length) {
+                            setDisplayText(text.substring(0, ++i));
+                        } else {
+                            clearInterval(interval);
+                            setTimeout(() => setShowCaret(false), 2000);
                         }
-                      )
-                    ),
-                    React.createElement('p', { className: 'text-md text-gray-500' }, 'School of Science and Technology, Singapore - 1 Technology Drive, Singapore 138572')
-                  ]
-                )
-              )
-            ]
-          ),
-          React.createElement(Footer, null)
-        ]
-      );
-    }
+                    }, speed);
+                };
 
-    // ================== Render ==================
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(React.createElement(App, null));
-  </script>
+                const delay = setTimeout(startTyping, initialDelay);
+                return () => clearTimeout(delay);
+            }, [text, speed, initialDelay]);
+
+            return (
+                <span className="typewriter-container text-blue-600">
+                    {displayText}
+                    {showCaret && <span className="typewriter-caret"></span>}
+                </span>
+            );
+        }
+
+        function FloatingIcons({ mousePosition }) {
+            const icons = ['🏸', '🏀', '⚽', '📚', '⚛️', '🧪', '💻'];
+            const numIcons = 15; // Reduced for performance and aesthetics
+
+            // Initialize icons with their properties
+            const iconRefs = React.useRef([]);
+            const iconData = React.useMemo(() => Array.from({ length: numIcons }).map((_, i) => ({
+                id: i,
+                icon: icons[Math.floor(Math.random() * icons.length)],
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.3, // Slow velocity
+                vy: (Math.random() - 0.5) * 0.3,
+                size: Math.random() * 1.5 + 1.5, // Bigger size: 1.5rem to 3rem
+                baseX: Math.random() * window.innerWidth,
+                baseY: Math.random() * window.innerHeight,
+            })), []);
+
+            React.useEffect(() => {
+                let animationFrameId;
+                
+                const animate = () => {
+                    iconRefs.current.forEach((iconEl, i) => {
+                        if (!iconEl) return;
+
+                        let { x, y, vx, vy, baseX, baseY } = iconData[i];
+
+                        // Attraction to cursor
+                        if (mousePosition) {
+                            const dx = mousePosition.x - x;
+                            const dy = mousePosition.y - y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (dist < 200) { // Attraction radius
+                                const angle = Math.atan2(dy, dx);
+                                const ax = Math.cos(angle) * 0.03; // Attraction force
+                                const ay = Math.sin(angle) * 0.03;
+                                vx += ax;
+                                vy += ay;
+                            }
+                        }
+
+                        // Gravity back to base position
+                        const returnDx = baseX - x;
+                        const returnDy = baseY - y;
+                        vx += returnDx * 0.0005;
+                        vy += returnDy * 0.0005;
+
+                        // Damping / Friction
+                        vx *= 0.96;
+                        vy *= 0.96;
+
+                        // Update position
+                        x += vx;
+                        y += vy;
+
+                        // Wall bounce
+                        if (x < 0 || x > window.innerWidth) vx *= -1;
+                        if (y < 0 || y > window.innerHeight) vy *= -1;
+
+                        // Update data and element
+                        iconData[i] = { ...iconData[i], x, y, vx, vy };
+                        iconEl.style.transform = `translate(${x}px, ${y}px)`;
+                    });
+
+                    animationFrameId = requestAnimationFrame(animate);
+                };
+
+                animate();
+
+                return () => {
+                    cancelAnimationFrame(animationFrameId);
+                };
+            }, [mousePosition]); // Rerun effect if mousePosition changes
+
+            return (
+                <div className="floating-icon-container">
+                    {iconData.map((data, i) => (
+                        <div
+                            key={data.id}
+                            ref={el => iconRefs.current[i] = el}
+                            className="floating-icon"
+                            style={{
+                                top: 0,
+                                left: 0,
+                                fontSize: `${data.size}rem`,
+                                transform: `translate(${data.x}px, ${data.y}px)`,
+                                opacity: 0.7
+                            }}
+                        >
+                            {data.icon}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        // --- Page Sections ---
+
+        function ProfileSection() {
+            const [mousePosition, setMousePosition] = React.useState(null);
+
+            const handleMouseMove = (e) => {
+                setMousePosition({ x: e.clientX, y: e.clientY });
+            };
+
+            return (
+                <section 
+                    id="profile" 
+                    className="relative py-20 sm:py-24 text-center overflow-hidden"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => setMousePosition(null)}
+                >
+                    <FloatingIcons mousePosition={mousePosition} />
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 fade-in z-10 relative">
+                        <img
+                            src="https://placehold.co/128x128/4299e1/ffffff?text=L"
+                            alt="Lathish Profile"
+                            className="w-32 h-32 mx-auto rounded-full shadow-xl border-4 border-white mb-6"
+                        />
+                        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 flex items-center justify-center flex-wrap gap-2">
+                            <span>Hi, I'm</span>
+                            <TypewriterText text="Lathish" speed={120} initialDelay={500} />
+                        </h2>
+                        <p className="text-xl text-gray-700 mb-2">
+                            Student at <span className="font-semibold text-blue-700">School of Science and Technology, Singapore</span>
+                        </p>
+                        <p className="text-md text-gray-600 max-w-2xl mx-auto mb-6">
+                            Passionate about the intersection of technology, sports, and science.
+                        </p>
+                        <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 text-gray-700 text-lg">
+                            <span className="flex items-center gap-2">📍 Singapore</span>
+                            <span className="flex items-center gap-2">🎓 SST Student</span>
+                            <span className="flex items-center gap-2">🏸 Badminton Player</span>
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        function InterestsSection() {
+            const interests = [
+                { icon: '🏸', title: 'Badminton', description: 'Dedicated school team player with key wins at interschool competitions.' },
+                { icon: '🏀', title: 'Basketball', description: 'Enjoying the strategy and teamwork of the game.' },
+                { icon: '💻', title: 'Computing & Tech', description: 'Exploring programming, from web development to data science.' },
+                { icon: '🧪', title: 'Chemistry & Physics', description: 'Fascinated by the fundamental laws that govern our world.' },
+            ];
+
+            return (
+                <section id="interests" className="py-16 bg-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl font-bold text-gray-900">My Passions & Interests</h2>
+                            <p className="text-lg text-gray-600 mt-2">A glimpse into what drives me.</p>
+                        </div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                            {interests.map((item, index) => (
+                                <div key={index} className="bg-gray-50 p-6 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                    <div className="text-5xl mb-4">{item.icon}</div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>
+                                    <p className="text-gray-600">{item.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
+        function AcademicMap() {
+            return (
+                <section id="academics" className="py-16 bg-gray-100">
+                    <div className="text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h2 className="text-3xl font-bold text-gray-900 mb-4">📚 Academic Journey</h2>
+                        <p className="text-lg text-gray-700 mb-6">
+                            My current place of learning and exploration.
+                        </p>
+                        <h3 className="text-2xl font-semibold text-blue-800 mb-4">
+                            School of Science and Technology, Singapore (SST)
+                        </h3>
+                        <div className="relative rounded-lg overflow-hidden shadow-xl mx-auto mb-4 max-w-4xl aspect-video">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.759902640283!2d103.77169467475143!3d1.313653199679126!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a3e1f0e4b7b%3A0x6b4f7a5d9a9f2b1!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1719600000000!5m2!1sen!2ssg"
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                        <p className="text-sm text-gray-600">1 Technology Dr, Singapore 138572</p>
+                    </div>
+                </section>
+            );
+        }
+
+        // --- Main App Component ---
+
+        function App() {
+            return (
+                <div>
+                    <Header />
+                    <main>
+                        <ProfileSection />
+                        <InterestsSection />
+                        <AcademicMap />
+                    </main>
+                    <Footer />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
