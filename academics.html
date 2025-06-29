@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lathish - Academic Accomplishments</title>
+    <title>Lathish - EAE Portfolio</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -22,7 +22,6 @@
   </script>
 
     <style>
-        /* --- Base & Animation Styles --- */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc; /* slate-50 */
@@ -58,55 +57,21 @@
             50% { background-color: currentColor; }
         }
 
-        /* --- Hero Section Specific Styles --- */
-        #hero {
-            position: relative;
-            overflow: hidden;
-            background-color: #1e1b4b; /* indigo-950 */
-        }
-        .hero-bg {
+        .floating-icon-container {
             position: absolute;
-            top: -10%; right: -10%; bottom: -10%; left: -10%;
-            width: 120%;
-            height: 120%;
-            background-image: url('https://images.unsplash.com/photo-1521747116042-5a810fda9664?q=80&w=2940&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 1;
-        }
-        .hero-overlay {
-            position: absolute;
-            top: 0; right: 0; bottom: 0; left: 0;
-            background-color: rgba(30, 27, 75, 0.75); /* indigo-950 with 75% opacity */
-            backdrop-filter: blur(4px);
-            z-index: 2;
-        }
-        .hero-content {
-            position: relative;
-            z-index: 3;
-        }
-        
-        .scroll-down-arrow {
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
-        }
-        
-        /* --- Timeline Styling --- */
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 1.25rem; /* 20px */
             top: 0;
+            left: 0;
+            width: 100%;
             height: 100%;
-            width: 3px;
-            background-color: #e2e8f0; /* slate-200 */
+            overflow: hidden;
+            z-index: 1; 
         }
-
+        .floating-icon {
+            position: absolute;
+            will-change: transform;
+            transition: transform 0.1s linear;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.25); /* Adds a subtle glow */
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -132,23 +97,15 @@
             return containerRef;
         };
         
-        const useMousePosition = () => {
-            const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
-            React.useEffect(() => {
-                const updateMousePosition = ev => setMousePosition({ x: ev.clientX, y: ev.clientY });
-                window.addEventListener('mousemove', updateMousePosition);
-                return () => window.removeEventListener('mousemove', updateMousePosition);
-            }, []);
-            return mousePosition;
-        };
-
         // --- Reusable Components ---
+
         function Header() {
             const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
             const navLinks = [
-                { href: "index.html#profile", text: "Profile" },
-                { href: "index.html#interests", text: "Interests" },
-                { href: "index.html#academics", text: "Academics" },
+                { href: "#profile", text: "Profile" },
+                { href: "#interests", text: "Interests" },
+                // THIS IS THE CHANGED LINE
+                { href: "Academics.html", text: "Academics" },
                 { href: "badminton.html", text: "Badminton" },
             ];
 
@@ -205,7 +162,7 @@
                 </footer>
             );
         }
-        
+
         function TypewriterText({ text, speed = 100, initialDelay = 500, className = '' }) {
             const [displayText, setDisplayText] = React.useState('');
             const [showCaret, setShowCaret] = React.useState(true);
@@ -232,112 +189,154 @@
                 </span>
             );
         }
-        
-        // --- Page Sections ---
-        function KeyHighlight({ icon, value, label }) {
+
+        function FloatingIcons({ mousePosition }) {
+            const icons = ['👨🏽‍💻', '🏀', '🏸', '🏸', '🏸', '🥇', '🇸🇬', '⚛️', '🧪', '🧮'];
+            const numIcons = 30;
+            const iconRefs = React.useRef([]);
+
+            const iconData = React.useMemo(() => Array.from({ length: numIcons }).map((_, i) => ({
+                id: i,
+                icon: icons[Math.floor(Math.random() * icons.length)],
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                size: Math.random() * 1.5 + 1.5,
+                baseX: Math.random() * window.innerWidth,
+                baseY: Math.random() * window.innerHeight,
+            })), []);
+
+            React.useEffect(() => {
+                let animationFrameId;
+                const animate = () => {
+                    iconRefs.current.forEach((iconEl, i) => {
+                        if (!iconEl) return;
+                        let { x, y, vx, vy, baseX, baseY } = iconData[i];
+                        if (mousePosition) {
+                            const dx = mousePosition.x - x;
+                            const dy = mousePosition.y - y;
+                            const dist = Math.sqrt(dx * dx + dy * dy);
+                            if (dist < 150) {
+                                const angle = Math.atan2(dy, dx);
+                                vx -= Math.cos(angle) * 0.5;
+                                vy -= Math.sin(angle) * 0.5;
+                            }
+                        }
+                        const returnDx = baseX - x;
+                        const returnDy = baseY - y;
+                        vx += returnDx * 0.0005;
+                        vy += returnDy * 0.0005;
+                        vx *= 0.96;
+                        vy *= 0.96;
+                        x += vx;
+                        y += vy;
+                        if (x < 0 || x > window.innerWidth) vx *= -1;
+                        if (y < 0 || y > window.innerHeight) vy *= -1;
+                        iconData[i] = { ...iconData[i], x, y, vx, vy };
+                        iconEl.style.transform = `translate(${x}px, ${y}px)`;
+                    });
+                    animationFrameId = requestAnimationFrame(animate);
+                };
+                animate();
+                return () => cancelAnimationFrame(animationFrameId);
+            }, [mousePosition, iconData]);
+
             return (
-                <div className="text-center">
-                    <div className="text-4xl text-blue-400 mb-2">{icon}</div>
-                    <div className="text-2xl font-bold text-white">{value}</div>
-                    <div className="text-sm text-slate-300 tracking-wider uppercase">{label}</div>
+                <div className="floating-icon-container">
+                    {iconData.map((data, i) => (
+                        <div
+                            key={data.id}
+                            ref={el => iconRefs.current[i] = el}
+                            className="floating-icon"
+                            style={{
+                                top: 0,
+                                left: 0,
+                                fontSize: `${data.size}rem`,
+                                transform: `translate(${data.x}px, ${data.y}px)`,
+                                opacity: 0.7
+                            }}
+                        >
+                            {data.icon}
+                        </div>
+                    ))}
                 </div>
             );
         }
 
-        function AcademicsHeroSection() {
-            const { x, y } = useMousePosition();
-            const [windowSize, setWindowSize] = React.useState({ width: 0, height: 0 });
-            React.useEffect(() => {
-                const handleResize = () => setWindowSize({ width: window.innerWidth, height: window.innerHeight });
-                window.addEventListener('resize', handleResize);
-                handleResize();
-                return () => window.removeEventListener('resize', handleResize);
-            }, []);
+        // --- Page Sections ---
 
-            const parallaxX = windowSize.width > 0 ? (x - windowSize.width / 2) / 40 : 0;
-            const parallaxY = windowSize.height > 0 ? (y - windowSize.height / 2) / 40 : 0;
-
-            const highlights = [
-                { icon: '🥇', value: 'Gold', label: 'International Event' },
-                { icon: '🌍', value: '3+', label: 'Intl. Representations' },
-                { icon: '📈', value: 'Edusave', label: 'Good Progress' },
-            ];
+        function ProfileSection() {
+            const [mousePosition, setMousePosition] = React.useState(null);
+            const handleMouseMove = (e) => {
+                setMousePosition({ x: e.clientX, y: e.clientY });
+            };
 
             return (
-                <section id="hero" className="h-screen flex flex-col justify-center items-center text-center text-white p-4">
-                    <div className="hero-bg" style={{ transform: `translate(${parallaxX}px, ${parallaxY}px)` }}></div>
-                    <div className="hero-overlay"></div>
-                    <div className="hero-content flex flex-col h-full justify-center">
-                        <div className="flex-grow flex flex-col justify-center items-center">
-                            <div className="animate-hero-fade-in">
-                                <h1 
-                                    className="text-5xl md:text-7xl font-black tracking-tight"
-                                    style={{textShadow: '0px 4px 15px rgba(0, 0, 0, 0.4)'}}
-                                >
-                                    My <TypewriterText text="Academic Journey" speed={80} initialDelay={1000} className="text-blue-400" />
-                                </h1>
-                                <p className="text-xl text-slate-300 max-w-2xl mx-auto mt-6" style={{textShadow: '0px 2px 8px rgba(0, 0, 0, 0.5)'}}>
-                                    A record of my achievements, awards, and key learning experiences.
-                                </p>
-                            </div>
-                            <div className="animate-hero-fade-in" style={{ animationDelay: '0.6s' }}>
-                                <div className="grid grid-cols-3 gap-8 md:gap-16 max-w-3xl mx-auto mt-16">
-                                    {highlights.map(h => <KeyHighlight key={h.label} {...h} />)}
-                                </div>
-                            </div>
+                <section
+                    id="profile"
+                    className="relative py-24 sm:py-32 text-center overflow-hidden bg-gradient-to-br from-slate-900 to-blue-900 text-white"
+                    onMouseMove={handleMouseMove}
+                    onMouseLeave={() => setMousePosition(null)}
+                >
+                    <FloatingIcons mousePosition={mousePosition} />
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
+                        <div className="animate-hero-fade-in">
+                            <img
+                                src="images/profile pic.jpg"
+                                alt="Lathish Profile"
+                                className="w-32 h-32 mx-auto rounded-full shadow-2xl border-4 border-white/50 mb-6"
+                            />
+                            <h2 className="text-5xl md:text-6xl font-black mb-4 tracking-tight" style={{textShadow: '0px 4px 15px rgba(0, 0, 0, 0.4)'}}>
+                                <span>Hi, I'm </span>
+                                <TypewriterText text="Lathish" speed={120} initialDelay={1000} className="text-blue-400" />
+                            </h2>
+                            <p className="text-xl text-slate-300">
+                                Student at <span className="font-semibold text-white">School of Science and Technology, Singapore</span>
+                            </p>
+                            <p className="text-lg text-slate-400 max-w-2xl mx-auto mt-4">
+                                Passionate about the intersection of technology, sports, and science.
+                            </p>
                         </div>
-                        <a href="#accomplishments" className="scroll-down-arrow flex-shrink-0 pb-8 animate-hero-fade-in" style={{ animationDelay: '1.2s' }}>
-                            <svg className="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                            </svg>
-                        </a>
+                        <div className="animate-hero-fade-in mt-8 flex justify-center flex-wrap gap-x-6 gap-y-3 text-slate-300" style={{ animationDelay: '0.6s' }}>
+                            <span className="flex items-center gap-2">📍 Singapore</span>
+                            <span className="flex items-center gap-2">🎓 SST Student</span>
+                            <span className="flex items-center gap-2">🏸 Badminton Player</span>
+                        </div>
                     </div>
                 </section>
             );
         }
 
-        function AccomplishmentsSection() {
-            const accomplishments = [
-                // NEWLY ADDED ITEM
-                { year: 2024, title: 'Global Citizenship Education', event: 'Space Shuttle Research Trip to Hainan, China', details: 'Immersed into the Chinese culture and science sector during a school-organized research trip in November.', teacher: 'Mr Allan Low', highlight: '✈️ International Trip' },
-                { year: 2024, title: 'Infocomm Technology (Computing)', event: 'Perse Coding Team Challenge (Round 1)', details: 'Represented School at International Event.', teacher: 'Mr. Robin Pang' },
-                { year: 2024, title: 'Tamil Language', event: 'SST Book Prize (S3)', details: 'Awarded to student with highest results in cohort to related subject.', teacher: 'Mr. Samath' },
-                { year: 2024, title: 'Student Leadership (HOUSE)', event: 'Upper Sec House Committee', details: 'Facilitated the 2024 Sec 2 Outdoor Education Expedition Program.', teacher: 'Mr Ng Jun Wei' },
-                { year: 2023, title: 'Infocomm Technology (Computing)', event: 'Perse Coding (Final Round)', details: 'Represented School and obtained Gold Award at International Event.', teacher: 'Mr Robin Pang', highlight: '🥇 Gold Award' },
-                { year: 2023, title: 'Science Club', event: 'Young Inventors Challenge', details: 'Represented School and presented Research Paper/Project at International Event.', teacher: 'N.A' },
-                { year: 2023, title: 'English Culture and Language', event: 'Secondary 2 Student Congress', details: 'N/A', teacher: 'N.A' },
-                { year: 2023, title: 'Secondary 2 Geography Performance Task', event: '(Market Place)', details: 'Represented Class at Intra-School Event and achieved Best Project - First Runner Up.', teacher: 'Ms. Ruth Loh', highlight: '🥈 1st Runner Up' },
-                { year: 2023, title: 'Edusave Good Progress Award 2023', event: 'Academic Performance', details: 'For improvement in academic performance and demonstrating good conduct.', teacher: 'N.A', highlight: '📈 Good Progress' },
-                { year: 2023, title: 'Student Leadership (HOUSE)', event: 'House Committee', details: 'Completed LoS 1 Stages of Group Development (OEE Training) and Outdoor Education Expedition (OEE).', teacher: 'Mr Ng Jun Wei' },
+        function InterestsSection() {
+            const interests = [
+                { icon: '🏸', title: 'Badminton', description: 'Dedicated school team player with key wins at interschool competitions.' },
+                { icon: '🏀', title: 'Basketball', description: 'Enjoying the strategy and teamwork of the game.' },
+                { icon: '🧮', title: 'Mathematics', description: 'Delving into complex problem-solving and the elegance of mathematical proofs.' },
+                { icon: '💻', title: 'Computing & Tech', description: 'Exploring programming, from web development to data science.' },
+                { icon: '🧪', title: 'Chemistry', description: 'Fascinated by the reactions that build our world.' },
+                 { icon: '⚛️', title: 'Physics', description: 'Intrigued by the fundamental laws that govern the universe.' },
             ];
             
             const sectionRef = useIntersectionObserver({ threshold: 0.1 });
 
             return (
-                <section id="accomplishments" className="py-20 sm:py-28 bg-slate-50" ref={sectionRef}>
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <section id="interests" className="py-20 sm:py-28 bg-white" ref={sectionRef}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
-                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Timeline of Accomplishments</h2>
-                            <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A detailed overview of my academic and co-curricular achievements.</p>
+                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">My Passions & Interests</h2>
+                            <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A glimpse into what drives and inspires me.</p>
                         </div>
-                        
-                        <div className="relative timeline space-y-12">
-                            {accomplishments.map((item, index) => (
-                                <div key={index} className="scroll-reveal pl-12 md:pl-16 relative">
-                                    <div className="absolute top-1 -left-1.5 w-6 h-6 rounded-full bg-white border-4 border-blue-600 z-10 flex items-center justify-center">
-                                        <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-2xl hover:border-blue-500 hover:-translate-y-1">
-                                        {item.highlight && (
-                                            <span className="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mb-3 inline-block">{item.highlight}</span>
-                                        )}
-                                        <p className="text-sm font-semibold text-slate-500 mb-2">{item.year} • {item.title}</p>
-                                        <h3 className="text-xl font-bold text-slate-800 mb-2">{item.event}</h3>
-                                        {item.details !== 'N/A' && <p className="text-slate-600">{item.details}</p>}
-                                        {item.teacher !== 'N.A' && (
-                                            <p className="text-sm text-slate-400 mt-4">Teacher-in-charge: <span className="font-medium text-slate-500">{item.teacher}</span></p>
-                                        )}
-                                    </div>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {interests.map((item, index) => (
+                                <div
+                                    key={index}
+                                    className="scroll-reveal group bg-slate-50 p-8 rounded-xl border border-slate-200/80 transition-all duration-300 ease-in-out hover:bg-white hover:shadow-2xl hover:border-blue-500 hover:scale-105"
+                                    style={{ transitionDelay: `${index * 100}ms` }}
+                                >
+                                    <div className="text-5xl mb-4">{item.icon}</div>
+                                    <h3 className="text-xl font-bold text-slate-800 mb-2">{item.title}</h3>
+                                    <p className="text-slate-600">{item.description}</p>
                                 </div>
                             ))}
                         </div>
@@ -352,8 +351,8 @@
                 <div>
                     <Header />
                     <main>
-                        <AcademicsHeroSection />
-                        <AccomplishmentsSection />
+                        <ProfileSection />
+                        <InterestsSection />
                     </main>
                     <Footer />
                 </div>
