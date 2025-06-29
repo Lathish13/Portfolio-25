@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,33 +10,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script>
+    tailwind.theme = {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+        },
+      }
+    }
+  </script>
 
     <style>
-        /* Set the default font for the page */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
         }
-
-        /* --- General Animations --- */
-        @keyframes fadeIn {
+        
+        @keyframes hero-fade-in {
             from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            to   { opacity: 1; transform: translateY(0); }
         }
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+        .animate-hero-fade-in {
+            animation: hero-fade-in 1s ease-out 0.3s forwards;
         }
 
-        /* --- Typewriter Animation --- */
-        .typewriter-container {
-            display: inline-flex;
-            align-items: baseline;
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         .typewriter-caret {
             width: 3px;
-            height: 1.1em; /* Match the font size */
+            height: 1.1em;
             background-color: currentColor;
-            margin-left: 4px;
+            margin-left: 8px;
             animation: blink-caret 0.75s step-end infinite;
         }
         @keyframes blink-caret {
@@ -44,7 +57,6 @@
             50% { background-color: currentColor; }
         }
 
-        /* --- Floating Icons Animation --- */
         .floating-icon-container {
             position: absolute;
             top: 0;
@@ -52,102 +64,137 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            z-index: -1; /* Place behind content */
+            z-index: 1; 
         }
         .floating-icon {
             position: absolute;
-            will-change: transform; /* Optimize for animation */
-            transition: transform 0.1s linear; /* Smooth movement */
+            will-change: transform;
+            transition: transform 0.1s linear;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.25); /* Adds a subtle glow */
         }
-        
-        /* --- Interest Card Hover Animation --- */
-        @keyframes subtle-float {
-            0% { transform: translateY(0px) rotate(-0.5deg); }
-            50% { transform: translateY(-5px) rotate(0.5deg); }
-            100% { transform: translateY(0px) rotate(-0.5deg); }
-        }
-        .group:hover .animate-on-hover {
-             animation: subtle-float 6s ease-in-out infinite;
-        }
-
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-50 text-slate-800">
     <div id="root"></div>
 
     <script type="text/babel">
+        // --- Custom Hooks ---
+        const useIntersectionObserver = (options) => {
+            const containerRef = React.useRef(null);
+            React.useEffect(() => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, options);
+                const elements = containerRef.current.querySelectorAll('.scroll-reveal');
+                elements.forEach(el => observer.observe(el));
+                return () => observer.disconnect();
+            }, [options]);
+            return containerRef;
+        };
+        
         // --- Reusable Components ---
 
         function Header() {
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+            const navLinks = [
+                { href: "#profile", text: "Profile" },
+                { href: "#interests", text: "Interests" },
+                // THIS IS THE CHANGED LINE
+                { href: "Academics.html", text: "Academics" },
+                { href: "badminton.html", text: "Badminton" },
+            ];
+
             return (
-                <header className="bg-white/80 backdrop-blur-sm shadow-sm sticky top-0 z-50">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                        <a href="index.html" className="flex items-center space-x-3">
-                            <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
-                                <span className="text-white font-bold text-2xl">L</span>
+                <header className="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-20">
+                            <a href="index.html" className="flex items-center space-x-3 group">
+                                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md transition-all duration-300 group-hover:bg-blue-700 group-hover:scale-105">
+                                    <span className="text-white font-black text-2xl">L</span>
+                                </div>
+                                <div>
+                                    <h1 className="text-2xl font-bold text-slate-900">Lathish</h1>
+                                    <p className="text-sm text-slate-500">EAE Portfolio</p>
+                                </div>
+                            </a>
+                            <nav className="hidden md:flex items-center space-x-2">
+                                {navLinks.map(link => (
+                                    <a key={link.text} href={link.href} className="text-slate-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50 font-medium">
+                                        {link.text}
+                                    </a>
+                                ))}
+                            </nav>
+                            <div className="md:hidden">
+                                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        {isMobileMenuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />}
+                                    </svg>
+                                </button>
                             </div>
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900">Lathish</h1>
-                                <p className="text-sm text-gray-600">EAE Portfolio</p>
-                            </div>
-                        </a>
-                        <nav className="hidden md:flex items-center space-x-8 text-md font-medium">
-    <a href="#profile" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Profile</a>
-    <a href="#interests" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Interests</a>
-    <a href="#academics" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Academics</a>
-    <a href="badminton.html" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Badminton</a>
-</nav>
-                        {/* Mobile menu could be added here */}
+                        </div>
                     </div>
+                    {isMobileMenuOpen && (
+                        <div className="md:hidden bg-white border-t border-slate-200">
+                            <nav className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+                                {navLinks.map(link => (
+                                    <a key={link.text} href={link.href} className="block text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium">
+                                        {link.text}
+                                    </a>
+                                ))}
+                            </nav>
+                        </div>
+                    )}
                 </header>
             );
         }
 
         function Footer() {
             return (
-                <footer className="bg-gray-800 text-white py-8">
-                    <div className="text-center text-gray-400">
+                <footer className="bg-slate-900 text-white py-12">
+                    <div className="text-center text-slate-400">
                         © {new Date().getFullYear()} Lathish - EAE Portfolio
                     </div>
                 </footer>
             );
         }
 
-        function TypewriterText({ text, speed = 100, initialDelay = 500 }) {
+        function TypewriterText({ text, speed = 100, initialDelay = 500, className = '' }) {
             const [displayText, setDisplayText] = React.useState('');
             const [showCaret, setShowCaret] = React.useState(true);
-
             React.useEffect(() => {
                 const startTyping = () => {
                     let i = 0;
                     const interval = setInterval(() => {
                         if (i < text.length) {
-                            setDisplayText(text.substring(0, ++i));
+                            setDisplayText(prev => text.substring(0, i + 1));
+                            i++;
                         } else {
                             clearInterval(interval);
                             setTimeout(() => setShowCaret(false), 2000);
                         }
                     }, speed);
                 };
-
                 const delay = setTimeout(startTyping, initialDelay);
                 return () => clearTimeout(delay);
             }, [text, speed, initialDelay]);
-
             return (
-                <span className="typewriter-container text-blue-600">
-                    {displayText}
+                <span className={`inline-flex items-baseline ${className}`}>
+                    <span>{displayText}</span>
                     {showCaret && <span className="typewriter-caret"></span>}
                 </span>
             );
         }
 
         function FloatingIcons({ mousePosition }) {
-            // Updated icons array with more badminton emojis
-            const icons = ['👨🏽‍💻', '🏀', '🏸', '🏸', '🏸', '🥇', '🇸🇬', '⚛️', '🧪'];
-            const numIcons = 30; 
-
+            const icons = ['👨🏽‍💻', '🏀', '🏸', '🏸', '🏸', '🥇', '🇸🇬', '⚛️', '🧪', '🧮'];
+            const numIcons = 30;
             const iconRefs = React.useRef([]);
+
             const iconData = React.useMemo(() => Array.from({ length: numIcons }).map((_, i) => ({
                 id: i,
                 icon: icons[Math.floor(Math.random() * icons.length)],
@@ -155,61 +202,45 @@
                 y: Math.random() * window.innerHeight,
                 vx: (Math.random() - 0.5) * 0.3,
                 vy: (Math.random() - 0.5) * 0.3,
-                size: Math.random() * 1.5 + 1.5, 
+                size: Math.random() * 1.5 + 1.5,
                 baseX: Math.random() * window.innerWidth,
                 baseY: Math.random() * window.innerHeight,
             })), []);
 
             React.useEffect(() => {
                 let animationFrameId;
-
                 const animate = () => {
                     iconRefs.current.forEach((iconEl, i) => {
                         if (!iconEl) return;
-
                         let { x, y, vx, vy, baseX, baseY } = iconData[i];
-
                         if (mousePosition) {
                             const dx = mousePosition.x - x;
                             const dy = mousePosition.y - y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
-
-                            if (dist < 200) { 
+                            if (dist < 150) {
                                 const angle = Math.atan2(dy, dx);
-                                const ax = Math.cos(angle) * 0.03;
-                                const ay = Math.sin(angle) * 0.03;
-                                vx += ax;
-                                vy += ay;
+                                vx -= Math.cos(angle) * 0.5;
+                                vy -= Math.sin(angle) * 0.5;
                             }
                         }
-
                         const returnDx = baseX - x;
                         const returnDy = baseY - y;
                         vx += returnDx * 0.0005;
                         vy += returnDy * 0.0005;
-
                         vx *= 0.96;
                         vy *= 0.96;
-
                         x += vx;
                         y += vy;
-
                         if (x < 0 || x > window.innerWidth) vx *= -1;
                         if (y < 0 || y > window.innerHeight) vy *= -1;
-
                         iconData[i] = { ...iconData[i], x, y, vx, vy };
                         iconEl.style.transform = `translate(${x}px, ${y}px)`;
                     });
-
                     animationFrameId = requestAnimationFrame(animate);
                 };
-
                 animate();
-
-                return () => {
-                    cancelAnimationFrame(animationFrameId);
-                };
-            }, [mousePosition]); 
+                return () => cancelAnimationFrame(animationFrameId);
+            }, [mousePosition, iconData]);
 
             return (
                 <div className="floating-icon-container">
@@ -237,36 +268,37 @@
 
         function ProfileSection() {
             const [mousePosition, setMousePosition] = React.useState(null);
-
             const handleMouseMove = (e) => {
                 setMousePosition({ x: e.clientX, y: e.clientY });
             };
 
             return (
-                <section 
-                    id="profile" 
-                    className="relative py-20 sm:py-24 text-center overflow-hidden"
+                <section
+                    id="profile"
+                    className="relative py-24 sm:py-32 text-center overflow-hidden bg-gradient-to-br from-slate-900 to-blue-900 text-white"
                     onMouseMove={handleMouseMove}
                     onMouseLeave={() => setMousePosition(null)}
                 >
                     <FloatingIcons mousePosition={mousePosition} />
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 fade-in z-10 relative">
-                        <img
-                            src="https://placehold.co/128x128/4299e1/ffffff?text=L"
-                            alt="Lathish Profile"
-                            className="w-32 h-32 mx-auto rounded-full shadow-xl border-4 border-white mb-6"
-                        />
-                        <h2 className="text-4xl md:text-5xl font-extrabold mb-4 text-gray-900 flex items-center justify-center flex-wrap gap-2">
-                            <span>Hi, I'm</span>
-                            <TypewriterText text="Lathish" speed={120} initialDelay={500} />
-                        </h2>
-                        <p className="text-xl text-gray-700 mb-2">
-                            Student at <span className="font-semibold text-blue-700">School of Science and Technology, Singapore</span>
-                        </p>
-                        <p className="text-md text-gray-600 max-w-2xl mx-auto mb-6">
-                            Passionate about the intersection of technology, sports, and science.
-                        </p>
-                        <div className="flex justify-center flex-wrap gap-x-6 gap-y-2 text-gray-700 text-lg">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 z-10 relative">
+                        <div className="animate-hero-fade-in">
+                            <img
+                                src="images/profile pic.jpg"
+                                alt="Lathish Profile"
+                                className="w-32 h-32 mx-auto rounded-full shadow-2xl border-4 border-white/50 mb-6"
+                            />
+                            <h2 className="text-5xl md:text-6xl font-black mb-4 tracking-tight" style={{textShadow: '0px 4px 15px rgba(0, 0, 0, 0.4)'}}>
+                                <span>Hi, I'm </span>
+                                <TypewriterText text="Lathish" speed={120} initialDelay={1000} className="text-blue-400" />
+                            </h2>
+                            <p className="text-xl text-slate-300">
+                                Student at <span className="font-semibold text-white">School of Science and Technology, Singapore</span>
+                            </p>
+                            <p className="text-lg text-slate-400 max-w-2xl mx-auto mt-4">
+                                Passionate about the intersection of technology, sports, and science.
+                            </p>
+                        </div>
+                        <div className="animate-hero-fade-in mt-8 flex justify-center flex-wrap gap-x-6 gap-y-3 text-slate-300" style={{ animationDelay: '0.6s' }}>
                             <span className="flex items-center gap-2">📍 Singapore</span>
                             <span className="flex items-center gap-2">🎓 SST Student</span>
                             <span className="flex items-center gap-2">🏸 Badminton Player</span>
@@ -277,68 +309,34 @@
         }
 
         function InterestsSection() {
-            // Updated interests array
             const interests = [
                 { icon: '🏸', title: 'Badminton', description: 'Dedicated school team player with key wins at interschool competitions.' },
                 { icon: '🏀', title: 'Basketball', description: 'Enjoying the strategy and teamwork of the game.' },
-                { icon: '🧮', title: 'Mathematics & Add. Mathematics', description: 'Delving into complex problem-solving and the elegance of mathematical proofs.' },
+                { icon: '🧮', title: 'Mathematics', description: 'Delving into complex problem-solving and the elegance of mathematical proofs.' },
                 { icon: '💻', title: 'Computing & Tech', description: 'Exploring programming, from web development to data science.' },
-                { icon: '🧪', title: 'Chemistry & Physics', description: 'Fascinated by the fundamental laws that govern our world.' },
+                { icon: '🧪', title: 'Chemistry', description: 'Fascinated by the reactions that build our world.' },
+                 { icon: '⚛️', title: 'Physics', description: 'Intrigued by the fundamental laws that govern the universe.' },
             ];
-
-            const cardRefs = React.useRef([]);
-
-            const handleMouseMove = (e, index) => {
-                const card = cardRefs.current[index];
-                if (!card) return;
-                
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const moveX = (x - centerX) / (centerX) * -5; // Invert and control sensitivity
-                const moveY = (y - centerY) / (centerY) * -5;
-                
-                // Animate the icons/emojis inside the card
-                const iconEl = card.querySelector('.card-icon-container');
-                if (iconEl) {
-                    iconEl.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                }
-            };
             
-            const handleMouseLeave = (index) => {
-                const card = cardRefs.current[index];
-                if (!card) return;
-                const iconEl = card.querySelector('.card-icon-container');
-                if (iconEl) {
-                    iconEl.style.transform = `translate(0, 0)`;
-                }
-            };
+            const sectionRef = useIntersectionObserver({ threshold: 0.1 });
 
             return (
-                <section id="interests" className="py-16 bg-white">
-                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold text-gray-900">My Passions & Interests</h2>
-                            <p className="text-lg text-gray-600 mt-2">A glimpse into what drives me.</p>
+                <section id="interests" className="py-20 sm:py-28 bg-white" ref={sectionRef}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">My Passions & Interests</h2>
+                            <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A glimpse into what drives and inspires me.</p>
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {interests.map((item, index) => (
                                 <div
                                     key={index}
-                                    ref={el => cardRefs.current[index] = el}
-                                    onMouseMove={(e) => handleMouseMove(e, index)}
-                                    onMouseLeave={() => handleMouseLeave(index)}
-                                    className="group bg-gray-50 p-6 rounded-xl shadow-md transition-all duration-300 ease-in-out hover:bg-blue-600 hover:text-white hover:shadow-2xl"
+                                    className="scroll-reveal group bg-slate-50 p-8 rounded-xl border border-slate-200/80 transition-all duration-300 ease-in-out hover:bg-white hover:shadow-2xl hover:border-blue-500 hover:scale-105"
+                                    style={{ transitionDelay: `${index * 100}ms` }}
                                 >
-                                  <div className="animate-on-hover relative">
-                                    <div className="card-icon-container text-5xl mb-4 transition-transform duration-200 ease-out">{item.icon}</div>
-                                    <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-white transition-colors duration-300">{item.title}</h3>
-                                    <p className="text-gray-600 group-hover:text-blue-100 transition-colors duration-300">{item.description}</p>
-                                  </div>
+                                    <div className="text-5xl mb-4">{item.icon}</div>
+                                    <h3 className="text-xl font-bold text-slate-800 mb-2">{item.title}</h3>
+                                    <p className="text-slate-600">{item.description}</p>
                                 </div>
                             ))}
                         </div>
@@ -347,36 +345,7 @@
             );
         }
 
-        function AcademicMap() {
-    return (
-        <section id="academics" className="py-16 bg-gray-100">
-            <div className="text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">📚 Academic Journey</h2>
-                <p className="text-lg text-gray-700 mb-6">
-                    My current place of learning and exploration.
-                </p>
-                <h3 className="text-2xl font-semibold text-blue-800 mb-4">
-                    School of Science and Technology, Singapore (SST)
-                </h3>
-                <div className="relative w-full max-w-4xl mx-auto aspect-video overflow-hidden rounded-lg shadow-xl">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.77062422083!2d103.77174147587199!3d1.3130710986744831!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a84b222873d%3A0x85bf7beda6328e50!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1751199964692!5m2!1sen!2ssg"
-                        className="absolute top-0 left-0 w-full h-full"
-                        style={{ border: 0 }}
-                        allowFullScreen=""
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                    ></iframe>
-                </div>
-                <p className="text-sm text-gray-600 mt-4">1 Technology Dr, Singapore 138572</p>
-            </div>
-        </section>
-    );
-}
-
-
         // --- Main App Component ---
-
         function App() {
             return (
                 <div>
@@ -384,7 +353,6 @@
                     <main>
                         <ProfileSection />
                         <InterestsSection />
-                        <AcademicMap />
                     </main>
                     <Footer />
                 </div>
