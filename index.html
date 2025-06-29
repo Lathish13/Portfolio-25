@@ -12,6 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script>
+    // Custom Tailwind CSS theme configuration
     tailwind.theme = {
       extend: {
         fontFamily: {
@@ -19,14 +20,16 @@
         },
       }
     }
-  </script>
+    </script>
 
     <style>
+        /* Base body styles */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc; /* slate-50 */
         }
         
+        /* Keyframe animation for the hero section fade-in */
         @keyframes hero-fade-in {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -35,6 +38,7 @@
             animation: hero-fade-in 1s ease-out 0.3s forwards;
         }
 
+        /* Styles for elements that reveal on scroll */
         .scroll-reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -45,6 +49,7 @@
             transform: translateY(0);
         }
 
+        /* Styles for the typewriter effect's blinking caret */
         .typewriter-caret {
             width: 3px;
             height: 1.1em;
@@ -57,6 +62,7 @@
             50% { background-color: currentColor; }
         }
 
+        /* Container for the floating icons in the hero section */
         .floating-icon-container {
             position: absolute;
             top: 0;
@@ -66,11 +72,12 @@
             overflow: hidden;
             z-index: 1; 
         }
+        /* Individual floating icon styles */
         .floating-icon {
             position: absolute;
             will-change: transform;
             transition: transform 0.1s linear;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.25); /* Adds a subtle glow */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
         }
     </style>
 </head>
@@ -79,6 +86,13 @@
 
     <script type="text/babel">
         // --- Custom Hooks ---
+
+        /**
+         * Custom hook to observe elements and add a 'is-visible' class when they enter the viewport.
+         * This triggers the scroll-reveal animation.
+         * @param {object} options - IntersectionObserver options.
+         * @returns {React.RefObject} - A ref to be attached to the container of the elements to observe.
+         */
         const useIntersectionObserver = (options) => {
             const containerRef = React.useRef(null);
             React.useEffect(() => {
@@ -90,14 +104,17 @@
                         }
                     });
                 }, options);
-                // Ensure containerRef.current exists before querying
-                if (containerRef.current) {
-                    const elements = containerRef.current.querySelectorAll('.scroll-reveal');
+                
+                const currentRef = containerRef.current;
+                if (currentRef) {
+                    const elements = currentRef.querySelectorAll('.scroll-reveal');
                     elements.forEach(el => observer.observe(el));
                 }
+                
                 return () => {
-                    if (observer) {
-                        observer.disconnect();
+                    if (currentRef) {
+                        const elements = currentRef.querySelectorAll('.scroll-reveal');
+                        elements.forEach(el => observer.unobserve(el));
                     }
                 };
             }, [options]);
@@ -108,10 +125,11 @@
 
         function Header() {
             const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+            // Updated navigation links to include the new Academics section
             const navLinks = [
                 { href: "#profile", text: "Profile" },
                 { href: "#interests", text: "Interests" },
-                { href: "Academics.html", text: "Academics" },
+                { href: "#academics", text: "Academics" },
                 { href: "badminton.html", text: "Badminton" },
             ];
 
@@ -292,6 +310,7 @@
                                 src="images/profile pic.jpg"
                                 alt="Lathish Profile"
                                 className="w-32 h-32 mx-auto rounded-full shadow-2xl border-4 border-white/50 mb-6"
+                                onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/128x128/3b82f6/ffffff?text=L'; }}
                             />
                             <h2 className="text-5xl md:text-6xl font-black mb-4 tracking-tight" style={{textShadow: '0px 4px 15px rgba(0, 0, 0, 0.4)'}}>
                                 <span>Hi, I'm </span>
@@ -321,28 +340,27 @@
                 { icon: '🧮', title: 'Mathematics', description: 'Delving into complex problem-solving and the elegance of mathematical proofs.' },
                 { icon: '💻', title: 'Computing & Tech', description: 'Exploring programming, from web development to data science.' },
                 { icon: '🧪', title: 'Chemistry', description: 'Fascinated by the reactions that build our world.' },
-                 { icon: '⚛️', title: 'Physics', description: 'Intrigued by the fundamental laws that govern the universe.' },
+                { icon: '⚛️', title: 'Physics', description: 'Intrigued by the fundamental laws that govern the universe.' },
             ];
             
             const sectionRef = useIntersectionObserver({ threshold: 0.1 });
 
             return (
-                <section id="interests" className="py-20 sm:py-28 bg-white">
+                <section id="interests" className="py-20 sm:py-28 bg-white" ref={sectionRef}>
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">My Passions & Interests</h2>
                             <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A glimpse into what drives and inspires me.</p>
                         </div>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" ref={sectionRef}>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {interests.map((item, index) => (
-                                // THIS IS THE FIX:
-                                // Outer div for the reveal animation, applying the staggered delay
+                                // FIX: Outer div for scroll-reveal animation with staggered delay
                                 <div
-                                    key={item.title}
+                                    key={index}
                                     className="scroll-reveal"
                                     style={{ transitionDelay: `${index * 100}ms` }}
                                 >
-                                    {/* Inner div for all styling and hover effects, with NO delay */}
+                                    {/* Inner div for styling and instant hover effects */}
                                     <div className="h-full group bg-slate-50 p-8 rounded-xl border border-slate-200/80 transition-all duration-150 ease-in-out hover:bg-slate-800 hover:shadow-2xl hover:border-slate-800 hover:scale-105">
                                         <div className="text-5xl mb-4">{item.icon}</div>
                                         <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-white transition-colors duration-150">{item.title}</h3>
@@ -356,6 +374,36 @@
             );
         }
 
+        // NEWLY ADDED: Component for the Google Maps section
+        function AcademicMap() {
+            return (
+                <section id="academics" className="py-20 sm:py-28 bg-slate-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16">
+                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">📚 Academic Journey</h2>
+                            <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">
+                                My current place of learning and exploration.
+                            </p>
+                             <h3 className="text-2xl font-semibold text-blue-700 mt-4">
+                                School of Science and Technology, Singapore (SST)
+                            </h3>
+                        </div>
+                        <div className="relative w-full max-w-5xl mx-auto aspect-[16/9] overflow-hidden rounded-xl shadow-2xl border border-slate-200">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.77062422083!2d103.77174147587199!3d1.3130710986744831!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a84b222873d%3A0x85bf7beda6328e50!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1751199964692!5m2!1sen!2ssg"
+                                className="absolute top-0 left-0 w-full h-full"
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                        <p className="text-center text-slate-600 mt-4">1 Technology Dr, Singapore 138572</p>
+                    </div>
+                </section>
+            );
+        }
+
         // --- Main App Component ---
         function App() {
             return (
@@ -364,6 +412,7 @@
                     <main>
                         <ProfileSection />
                         <InterestsSection />
+                        <AcademicMap /> {/* Added the new map section here */}
                     </main>
                     <Footer />
                 </div>
