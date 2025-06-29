@@ -28,7 +28,6 @@
             background-color: #f8fafc; /* slate-50 */
         }
         
-        /* FIX: New animation for hero content on load */
         @keyframes hero-fade-in {
             from { opacity: 0; transform: translateY(20px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -47,7 +46,6 @@
             transform: translateY(0);
         }
 
-        /* --- Typewriter Animation --- */
         .typewriter-caret {
             width: 3px;
             height: 1.1em;
@@ -60,7 +58,6 @@
             50% { background-color: currentColor; }
         }
 
-        /* --- Timeline Styling --- */
         .timeline::before {
             content: '';
             position: absolute;
@@ -88,7 +85,7 @@
             top: -10%; right: -10%; bottom: -10%; left: -10%;
             width: 120%;
             height: 120%;
-            background-image: url('https://images.unsplash.com/photo-1593787416399-e68e3c4a1b1a?q=80&w=2940&auto=format&fit=crop');
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1344 2688'%3E%3Crect width='1344' height='2688' fill='%23020617'/%3E%3Cpath stroke='%231e293b' stroke-width='8' d='M672 0v2688M0 1344h1344M0 384h1344M0 2304h1344M60 1344h1224M60 2560h1224M60 128h1224M672 128v256M672 2304v256M60 384v1920M1284 384v1920M366 384v1920M978 384v1920M60 384L366 128M1284 384L978 128M60 2304L366 2560M1284 2304L978 2560'/%3E%3C/svg%3E");
             background-size: cover;
             background-position: center;
             transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -97,8 +94,8 @@
         .hero-overlay {
             position: absolute;
             top: 0; right: 0; bottom: 0; left: 0;
-            background-color: rgba(2, 6, 23, 0.7); /* slate-950 with 70% opacity */
-            backdrop-filter: blur(4px);
+            background-color: rgba(2, 6, 23, 0.65); /* slate-950 with 65% opacity */
+            backdrop-filter: blur(2px);
             z-index: 2;
         }
         .hero-content {
@@ -106,7 +103,6 @@
             z-index: 3;
         }
         
-        /* Scroll Down Arrow Animation */
         .scroll-down-arrow {
             animation: bounce 2s infinite;
         }
@@ -158,12 +154,12 @@
 
         // --- Reusable Components ---
         function Header() {
-            // ... (Header code remains unchanged)
             const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+            // --- CHANGE: Updated "Academics" link to point to the external page ---
             const navLinks = [
                 { href: "index.html#profile", text: "Profile" },
                 { href: "index.html#interests", text: "Interests" },
-                { href: "index.html#academics", text: "Academics" },
+                { href: "academics.html", text: "Academics" },
                 { href: "badminton.html", text: "Badminton" },
             ];
             return (
@@ -297,8 +293,9 @@
                 return () => window.removeEventListener('resize', handleResize);
             }, []);
 
-            const parallaxX = windowSize.width > 0 ? (x - windowSize.width / 2) / 40 : 0;
-            const parallaxY = windowSize.height > 0 ? (y - windowSize.height / 2) / 40 : 0;
+            const parallaxX = windowSize.width > 0 ? (windowSize.width / 2 - x) / 35 : 0;
+            const parallaxY = windowSize.height > 0 ? (windowSize.height / 2 - y) / 35 : 0;
+
 
             const highlights = [
                 { icon: '🏆', value: 'Bronze', label: 'Yuhua CSN 2024' },
@@ -308,12 +305,11 @@
 
             return (
                 <section id="hero" className="h-screen flex flex-col justify-center items-center text-center text-white p-4">
-                    <div className="hero-bg" style={{ transform: `translate(${parallaxX}px, ${parallaxY}px)` }}></div>
+                    <div className="hero-bg" style={{ transform: `scale(1.15) translate(${parallaxX}px, ${parallaxY}px)` }}></div>
                     <div className="hero-overlay"></div>
                     
                     <div className="hero-content flex flex-col h-full justify-center">
                         <div className="flex-grow flex flex-col justify-center items-center">
-                            {/* FIX: Replaced 'scroll-reveal' with a new animation class that works on load */}
                             <div className="animate-hero-fade-in">
                                 <h1 
                                     className="text-5xl md:text-7xl font-black tracking-tight"
@@ -343,7 +339,6 @@
             );
         }
         
-        // --- AchievementsTimeline and other sections remain unchanged ---
         function TimelineItem({ item, index }) {
             const side = index % 2 === 0 ? 'md:pr-8 md:text-right' : 'md:pl-8';
             const containerSide = index % 2 === 0 ? 'md:flex-row-reverse' : 'md:flex-row';
