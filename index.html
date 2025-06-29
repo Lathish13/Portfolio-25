@@ -86,13 +86,6 @@
 
     <script type="text/babel">
         // --- Custom Hooks ---
-
-        /**
-         * Custom hook to observe elements and add a 'is-visible' class when they enter the viewport.
-         * This triggers the scroll-reveal animation.
-         * @param {object} options - IntersectionObserver options.
-         * @returns {React.RefObject} - A ref to be attached to the container of the elements to observe.
-         */
         const useIntersectionObserver = (options) => {
             const containerRef = React.useRef(null);
             React.useEffect(() => {
@@ -125,11 +118,11 @@
 
         function Header() {
             const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-            // Updated navigation links to include the new Academics section
+            // --- CHANGE: "Academics" link points to academics.html ---
             const navLinks = [
                 { href: "#profile", text: "Profile" },
                 { href: "#interests", text: "Interests" },
-                { href: "#academics", text: "Academics" },
+                { href: "academics.html", text: "Academics" },
                 { href: "badminton.html", text: "Badminton" },
             ];
 
@@ -354,13 +347,11 @@
                         </div>
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {interests.map((item, index) => (
-                                // FIX: Outer div for scroll-reveal animation with staggered delay
                                 <div
                                     key={index}
                                     className="scroll-reveal"
                                     style={{ transitionDelay: `${index * 100}ms` }}
                                 >
-                                    {/* Inner div for styling and instant hover effects */}
                                     <div className="h-full group bg-slate-50 p-8 rounded-xl border border-slate-200/80 transition-all duration-150 ease-in-out hover:bg-slate-800 hover:shadow-2xl hover:border-slate-800 hover:scale-105">
                                         <div className="text-5xl mb-4">{item.icon}</div>
                                         <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-white transition-colors duration-150">{item.title}</h3>
@@ -374,7 +365,7 @@
             );
         }
 
-        // NEWLY ADDED: Component for the Google Maps section
+        // --- CHANGE: Academic Journey / Map Section RESTORED ---
         function AcademicMap() {
             return (
                 <section id="academics" className="py-20 sm:py-28 bg-slate-50">
@@ -412,7 +403,7 @@
                     <main>
                         <ProfileSection />
                         <InterestsSection />
-                        <AcademicMap /> {/* Added the new map section here */}
+                        <AcademicMap /> {/* Academic Journey section is back */}
                     </main>
                     <Footer />
                 </div>
