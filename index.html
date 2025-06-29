@@ -4,14 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lathish - EAE Portfolio</title>
-    <!-- React and ReactDOM Libraries -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel for JSX Transpilation -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -63,6 +59,17 @@
             will-change: transform; /* Optimize for animation */
             transition: transform 0.1s linear; /* Smooth movement */
         }
+        
+        /* --- Interest Card Hover Animation --- */
+        @keyframes subtle-float {
+            0% { transform: translateY(0px) rotate(-0.5deg); }
+            50% { transform: translateY(-5px) rotate(0.5deg); }
+            100% { transform: translateY(0px) rotate(-0.5deg); }
+        }
+        .group:hover .animate-on-hover {
+             animation: subtle-float 6s ease-in-out infinite;
+        }
+
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -136,66 +143,60 @@
         }
 
         function FloatingIcons({ mousePosition }) {
-            const icons = ['🏸', '🏀', '⚽', '📚', '⚛️', '🧪', '💻'];
-            const numIcons = 15; // Reduced for performance and aesthetics
+            // Updated icons array with more badminton emojis
+            const icons = ['👨🏽‍💻', '🏀', '🏸', '🏸', '🏸', '🥇', '🇸🇬', '⚛️', '🧪'];
+            const numIcons = 30; 
 
-            // Initialize icons with their properties
             const iconRefs = React.useRef([]);
             const iconData = React.useMemo(() => Array.from({ length: numIcons }).map((_, i) => ({
                 id: i,
                 icon: icons[Math.floor(Math.random() * icons.length)],
                 x: Math.random() * window.innerWidth,
                 y: Math.random() * window.innerHeight,
-                vx: (Math.random() - 0.5) * 0.3, // Slow velocity
+                vx: (Math.random() - 0.5) * 0.3,
                 vy: (Math.random() - 0.5) * 0.3,
-                size: Math.random() * 1.5 + 1.5, // Bigger size: 1.5rem to 3rem
+                size: Math.random() * 1.5 + 1.5, 
                 baseX: Math.random() * window.innerWidth,
                 baseY: Math.random() * window.innerHeight,
             })), []);
 
             React.useEffect(() => {
                 let animationFrameId;
-                
+
                 const animate = () => {
                     iconRefs.current.forEach((iconEl, i) => {
                         if (!iconEl) return;
 
                         let { x, y, vx, vy, baseX, baseY } = iconData[i];
 
-                        // Attraction to cursor
                         if (mousePosition) {
                             const dx = mousePosition.x - x;
                             const dy = mousePosition.y - y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
-                            
-                            if (dist < 200) { // Attraction radius
+
+                            if (dist < 200) { 
                                 const angle = Math.atan2(dy, dx);
-                                const ax = Math.cos(angle) * 0.03; // Attraction force
+                                const ax = Math.cos(angle) * 0.03;
                                 const ay = Math.sin(angle) * 0.03;
                                 vx += ax;
                                 vy += ay;
                             }
                         }
 
-                        // Gravity back to base position
                         const returnDx = baseX - x;
                         const returnDy = baseY - y;
                         vx += returnDx * 0.0005;
                         vy += returnDy * 0.0005;
 
-                        // Damping / Friction
                         vx *= 0.96;
                         vy *= 0.96;
 
-                        // Update position
                         x += vx;
                         y += vy;
 
-                        // Wall bounce
                         if (x < 0 || x > window.innerWidth) vx *= -1;
                         if (y < 0 || y > window.innerHeight) vy *= -1;
 
-                        // Update data and element
                         iconData[i] = { ...iconData[i], x, y, vx, vy };
                         iconEl.style.transform = `translate(${x}px, ${y}px)`;
                     });
@@ -208,7 +209,7 @@
                 return () => {
                     cancelAnimationFrame(animationFrameId);
                 };
-            }, [mousePosition]); // Rerun effect if mousePosition changes
+            }, [mousePosition]); 
 
             return (
                 <div className="floating-icon-container">
@@ -276,12 +277,46 @@
         }
 
         function InterestsSection() {
+            // Updated interests array
             const interests = [
                 { icon: '🏸', title: 'Badminton', description: 'Dedicated school team player with key wins at interschool competitions.' },
                 { icon: '🏀', title: 'Basketball', description: 'Enjoying the strategy and teamwork of the game.' },
+                { icon: '🧮', title: 'Mathematics & Add. Mathematics', description: 'Delving into complex problem-solving and the elegance of mathematical proofs.' },
                 { icon: '💻', title: 'Computing & Tech', description: 'Exploring programming, from web development to data science.' },
                 { icon: '🧪', title: 'Chemistry & Physics', description: 'Fascinated by the fundamental laws that govern our world.' },
             ];
+
+            const cardRefs = React.useRef([]);
+
+            const handleMouseMove = (e, index) => {
+                const card = cardRefs.current[index];
+                if (!card) return;
+                
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const moveX = (x - centerX) / (centerX) * -5; // Invert and control sensitivity
+                const moveY = (y - centerY) / (centerY) * -5;
+                
+                // Animate the icons/emojis inside the card
+                const iconEl = card.querySelector('.card-icon-container');
+                if (iconEl) {
+                    iconEl.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                }
+            };
+            
+            const handleMouseLeave = (index) => {
+                const card = cardRefs.current[index];
+                if (!card) return;
+                const iconEl = card.querySelector('.card-icon-container');
+                if (iconEl) {
+                    iconEl.style.transform = `translate(0, 0)`;
+                }
+            };
 
             return (
                 <section id="interests" className="py-16 bg-white">
@@ -290,12 +325,20 @@
                             <h2 className="text-3xl font-bold text-gray-900">My Passions & Interests</h2>
                             <p className="text-lg text-gray-600 mt-2">A glimpse into what drives me.</p>
                         </div>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {interests.map((item, index) => (
-                                <div key={index} className="bg-gray-50 p-6 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
-                                    <div className="text-5xl mb-4">{item.icon}</div>
-                                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{item.title}</h3>
-                                    <p className="text-gray-600">{item.description}</p>
+                                <div
+                                    key={index}
+                                    ref={el => cardRefs.current[index] = el}
+                                    onMouseMove={(e) => handleMouseMove(e, index)}
+                                    onMouseLeave={() => handleMouseLeave(index)}
+                                    className="group bg-gray-50 p-6 rounded-xl shadow-md transition-all duration-300 ease-in-out hover:bg-blue-600 hover:text-white hover:shadow-2xl"
+                                >
+                                  <div className="animate-on-hover relative">
+                                    <div className="card-icon-container text-5xl mb-4 transition-transform duration-200 ease-out">{item.icon}</div>
+                                    <h3 className="text-xl font-semibold text-gray-800 mb-2 group-hover:text-white transition-colors duration-300">{item.title}</h3>
+                                    <p className="text-gray-600 group-hover:text-blue-100 transition-colors duration-300">{item.description}</p>
+                                  </div>
                                 </div>
                             ))}
                         </div>
@@ -305,31 +348,32 @@
         }
 
         function AcademicMap() {
-            return (
-                <section id="academics" className="py-16 bg-gray-100">
-                    <div className="text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">📚 Academic Journey</h2>
-                        <p className="text-lg text-gray-700 mb-6">
-                            My current place of learning and exploration.
-                        </p>
-                        <h3 className="text-2xl font-semibold text-blue-800 mb-4">
-                            School of Science and Technology, Singapore (SST)
-                        </h3>
-                        <div className="relative rounded-lg overflow-hidden shadow-xl mx-auto mb-4 max-w-4xl aspect-video">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.77062422083!2d103.77174147587199!3d1.3130710986744831!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a84b222873d%3A0x85bf7beda6328e50!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1751199964692!5m2!1sen!2ssg"
-                                height="100%"
-                                style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
-                                allowFullScreen=""
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                            ></iframe>
-                        </div>
-                        <p className="text-sm text-gray-600">1 Technology Dr, Singapore 138572</p>
-                    </div>
-                </section>
-            );
-        }
+    return (
+        <section id="academics" className="py-16 bg-gray-100">
+            <div className="text-center max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 className="text-3xl font-bold text-gray-900 mb-4">📚 Academic Journey</h2>
+                <p className="text-lg text-gray-700 mb-6">
+                    My current place of learning and exploration.
+                </p>
+                <h3 className="text-2xl font-semibold text-blue-800 mb-4">
+                    School of Science and Technology, Singapore (SST)
+                </h3>
+                <div className="relative w-full max-w-4xl mx-auto aspect-video overflow-hidden rounded-lg shadow-xl">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.77062422083!2d103.77174147587199!3d1.3130710986744831!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a84b222873d%3A0x85bf7beda6328e50!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1751199964692!5m2!1sen!2ssg"
+                        className="absolute top-0 left-0 w-full h-full"
+                        style={{ border: 0 }}
+                        allowFullScreen=""
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                </div>
+                <p className="text-sm text-gray-600 mt-4">1 Technology Dr, Singapore 138572</p>
+            </div>
+        </section>
+    );
+}
+
 
         // --- Main App Component ---
 
