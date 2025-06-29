@@ -90,9 +90,16 @@
                         }
                     });
                 }, options);
-                const elements = containerRef.current.querySelectorAll('.scroll-reveal');
-                elements.forEach(el => observer.observe(el));
-                return () => observer.disconnect();
+                // Ensure containerRef.current exists before querying
+                if (containerRef.current) {
+                    const elements = containerRef.current.querySelectorAll('.scroll-reveal');
+                    elements.forEach(el => observer.observe(el));
+                }
+                return () => {
+                    if (observer) {
+                        observer.disconnect();
+                    }
+                };
             }, [options]);
             return containerRef;
         };
@@ -104,7 +111,7 @@
             const navLinks = [
                 { href: "#profile", text: "Profile" },
                 { href: "#interests", text: "Interests" },
-                { href: "#academics", text: "Academics" },
+                { href: "Academics.html", text: "Academics" },
                 { href: "badminton.html", text: "Badminton" },
             ];
 
@@ -320,55 +327,30 @@
             const sectionRef = useIntersectionObserver({ threshold: 0.1 });
 
             return (
-                <section id="interests" className="py-20 sm:py-28 bg-white" ref={sectionRef}>
+                <section id="interests" className="py-20 sm:py-28 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">My Passions & Interests</h2>
                             <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A glimpse into what drives and inspires me.</p>
                         </div>
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" ref={sectionRef}>
                             {interests.map((item, index) => (
+                                // THIS IS THE FIX:
+                                // Outer div for the reveal animation, applying the staggered delay
                                 <div
-                                    key={index}
-                                    className="scroll-reveal group bg-slate-50 p-8 rounded-xl border border-slate-200/80 transition-all duration-300 ease-in-out hover:bg-white hover:shadow-2xl hover:border-blue-500 hover:scale-105"
+                                    key={item.title}
+                                    className="scroll-reveal"
                                     style={{ transitionDelay: `${index * 100}ms` }}
                                 >
-                                    <div className="text-5xl mb-4">{item.icon}</div>
-                                    <h3 className="text-xl font-bold text-slate-800 mb-2">{item.title}</h3>
-                                    <p className="text-slate-600">{item.description}</p>
+                                    {/* Inner div for all styling and hover effects, with NO delay */}
+                                    <div className="h-full group bg-slate-50 p-8 rounded-xl border border-slate-200/80 transition-all duration-150 ease-in-out hover:bg-slate-800 hover:shadow-2xl hover:border-slate-800 hover:scale-105">
+                                        <div className="text-5xl mb-4">{item.icon}</div>
+                                        <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-white transition-colors duration-150">{item.title}</h3>
+                                        <p className="text-slate-600 group-hover:text-slate-300 transition-colors duration-150">{item.description}</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    </div>
-                </section>
-            );
-        }
-
-        function AcademicMap() {
-             const sectionRef = useIntersectionObserver({ threshold: 0.1 });
-            return (
-                <section id="academics" className="py-20 sm:py-28 bg-slate-50" ref={sectionRef}>
-                    <div className="text-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="scroll-reveal">
-                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Academic Journey</h2>
-                             <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">My current place of learning and exploration.</p>
-                            <h3 className="text-2xl font-semibold text-blue-700 mt-8 mb-4">
-                                School of Science and Technology, Singapore (SST)
-                            </h3>
-                        </div>
-                        <div className="scroll-reveal w-full max-w-5xl mx-auto aspect-video mt-8" style={{transitionDelay: '200ms'}}>
-                            <div className="rounded-xl shadow-2xl border-4 border-white overflow-hidden h-full">
-                                <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.784589254134!2d103.78848131529813!3d1.3024848620573007!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31da1a5a0244465f%3A0x80556f871575883f!2sSchool%20of%20Science%20and%20Technology%2C%20Singapore!5e0!3m2!1sen!2ssg!4v1656513333157!5m2!1sen!2ssg"
-                                    className="w-full h-full"
-                                    style={{ border: 0 }}
-                                    allowFullScreen=""
-                                    loading="lazy"
-                                    referrerPolicy="no-referrer-when-downgrade"
-                                ></iframe>
-                            </div>
-                        </div>
-                         <p className="scroll-reveal text-sm text-slate-500 mt-4" style={{transitionDelay: '300ms'}}>1 Technology Dr, Singapore 138572</p>
                     </div>
                 </section>
             );
@@ -382,7 +364,6 @@
                     <main>
                         <ProfileSection />
                         <InterestsSection />
-                        <AcademicMap />
                     </main>
                     <Footer />
                 </div>
