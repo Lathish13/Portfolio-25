@@ -59,7 +59,7 @@
             will-change: transform;
             transition: transform 0.1s linear;
         }
-       
+        
         /* --- Timeline Styling --- */
         .timeline::before {
             content: '';
@@ -71,7 +71,7 @@
             width: 3px;
             background-color: #e5e7eb; /* gray-200 */
         }
-       
+        
         .timeline-item-container {
             position: relative;
             width: 50%;
@@ -120,7 +120,7 @@
             border-style: solid;
             border-color: transparent white transparent transparent;
         }
-       
+        
         .timeline-content {
              opacity: 0;
              transform: translateY(20px);
@@ -152,7 +152,7 @@
     <a href="index.html#profile" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Profile</a>
     <a href="index.html#interests" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Interests</a>
     <a href="index.html#academics" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Academics</a>
-    <a href="badminton.html" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Badminton Page</a>
+    <a href="badminton.html" className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50">Badminton</a>
 </nav>
                     </div>
                 </header>
@@ -308,6 +308,59 @@
             );
         }
 
+        function PhotoGallery() {
+            // Replace with your actual image paths and captions
+            const photos = [
+                {
+                    src: 'https://placehold.co/600x400/3b82f6/ffffff?text=Action+Shot',
+                    caption: 'In the heat of the Yuhua CSN Competition 2024.'
+                },
+                {
+                    src: 'https://placehold.co/600x400/10b981/ffffff?text=Team+Photo',
+                    caption: 'With the team after a successful West Zone tournament.'
+                },
+                {
+                    src: 'https://placehold.co/600x400/f59e0b/ffffff?text=Receiving+Medal',
+                    caption: 'Receiving the Bronze medal at the 2024 awards ceremony.'
+                },
+                 {
+                    src: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Training',
+                    caption: 'A regular training session, pushing the limits.'
+                }
+            ];
+
+            return (
+                <section id="gallery" className="py-16 sm:py-20 bg-white">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl font-bold text-gray-900">Gallery</h2>
+                            <p className="text-lg text-gray-600 mt-2">A few moments from the court.</p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {photos.map((photo, index) => (
+                                <div 
+                                    key={index} 
+                                    className="fade-in group overflow-hidden rounded-xl shadow-lg border border-gray-200/80" 
+                                    style={{ animationDelay: `${index * 150}ms` }}
+                                >
+                                    <div className="overflow-hidden">
+                                        <img 
+                                            src={photo.src} 
+                                            alt={photo.caption} 
+                                            className="w-full h-56 object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-110" 
+                                        />
+                                    </div>
+                                    <div className="p-4 bg-gray-50">
+                                        <p className="text-gray-700 text-center">{photo.caption}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        }
+
         // --- Main App Component ---
 
         function App() {
@@ -317,6 +370,7 @@
                     <main>
                         <BadmintonHeroSection />
                         <AchievementsTimeline />
+                        <PhotoGallery />
                     </main>
                     <Footer />
                 </div>
