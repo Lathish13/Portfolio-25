@@ -106,6 +106,23 @@
             width: 3px;
             background-color: #e2e8f0; /* slate-200 */
         }
+
+        /* --- NEW Gallery Sliding Animation --- */
+        @keyframes slide-in-from-right {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slide-in-from-left {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .slide-in-next {
+            animation: slide-in-from-right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        .slide-in-prev {
+            animation: slide-in-from-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -257,7 +274,7 @@
 
             const highlights = [
                 { icon: '🤝', value: '5+', label: 'Projects' },
-                { icon: '❤️', value: '70+', label: 'Hours Served' },
+                { icon: '❤️', value: '47+', label: 'Hours Served' },
                 { icon: '🧑‍🤝‍🧑', value: 'Community', label: 'Focused' },
             ];
 
@@ -335,72 +352,92 @@
             );
         }
 
+        // --- UPDATED PHOTO GALLERY COMPONENT WITH SLIDING ANIMATION ---
         function PhotoGallery() {
-            // Using placeholder images as requested
             const photos = [
-                { src: 'https://placehold.co/600x400/a3e635/14532d?text=Volunteering+1', caption: 'Photo from a community project.' },
-                { src: 'https://placehold.co/600x400/a3e635/14532d?text=Volunteering+2', caption: 'Working with the team at a volunteering event.' },
-                { src: 'https://placehold.co/600x400/a3e635/14532d?text=Volunteering+3', caption: 'A snapshot from the Digital Clinic for Seniors.' },
-                { src: 'https://placehold.co/600x400/a3e635/14532d?text=Volunteering+4', caption: 'Engaging with the community.' },
-                { src: 'https://placehold.co/600x400/a3e635/14532d?text=Volunteering+5', caption: 'A memorable moment from service learning.' },
+                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Certificate+1', caption: 'Certificate for Digital Clinic for Seniors.' },
+                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Certificate+2', caption: 'Certificate of Appreciation from SGBono.' },
+                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Volunteering+Photo+1', caption: 'Working with the team at Rainbow Centre.' },
+                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Volunteering+Photo+2', caption: 'Advocating for my CCA at the DSA Open House.' },
+                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Certificate+3', caption: 'Service Learning Programme Completion.' },
             ];
-            const [selectedPhoto, setSelectedPhoto] = React.useState(null);
-            const galleryRef = useIntersectionObserver({ threshold: 0.1 });
+
+            const [currentIndex, setCurrentIndex] = React.useState(0);
+            const [animationClass, setAnimationClass] = React.useState('');
+
+            const goToPrevious = () => {
+                setAnimationClass('slide-in-prev');
+                const isFirstSlide = currentIndex === 0;
+                const newIndex = isFirstSlide ? photos.length - 1 : currentIndex - 1;
+                setTimeout(() => setCurrentIndex(newIndex), 0);
+            };
+
+            const goToNext = () => {
+                setAnimationClass('slide-in-next');
+                const isLastSlide = currentIndex === photos.length - 1;
+                const newIndex = isLastSlide ? 0 : currentIndex + 1;
+                setTimeout(() => setCurrentIndex(newIndex), 0);
+            };
+
+            React.useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowLeft') goToPrevious();
+                    if (e.key === 'ArrowRight') goToNext();
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [currentIndex]); // Re-add listener if currentIndex changes to get the latest state
 
             return (
                 <section id="gallery" className="py-20 sm:py-28 bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-16">
                             <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Gallery</h2>
-                            <p className="text-lg text-slate-600 mt-3">Moments from my volunteering journey.</p>
+                            <p className="text-lg text-slate-600 mt-3">Moments & Certificates from my volunteering journey.</p>
                         </div>
-                        <div ref={galleryRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {photos.map((photo, index) => (
-                                <div
-                                    key={index}
-                                    className="scroll-reveal group rounded-xl shadow-lg border border-slate-200/80 overflow-hidden cursor-pointer"
-                                    style={{ transitionDelay: `${index * 100}ms` }}
-                                    onClick={() => setSelectedPhoto(photo)}
-                                >
-                                    <div className="overflow-hidden">
-                                        <img src={photo.src} alt={photo.caption} className="w-full h-64 object-cover transform transition-all duration-500 ease-in-out group-hover:scale-110"/>
-                                    </div>
-                                    <div className="p-4 bg-slate-50">
-                                        <p className="text-slate-700 text-center truncate">{photo.caption}</p>
-                                    </div>
-                                </div>
-                            ))}
+
+                        <div className="max-w-5xl mx-auto relative group">
+                            {/* Large Image Display Container */}
+                            <div className="relative w-full aspect-[4/3] rounded-xl shadow-2xl overflow-hidden bg-slate-100 border-4 border-slate-200">
+                                <img 
+                                    key={currentIndex} // Re-trigger animation on change
+                                    src={photos[currentIndex].src} 
+                                    alt={photos[currentIndex].caption} 
+                                    className={`w-full h-full object-contain absolute top-0 left-0 ${animationClass}`}
+                                />
+                            </div>
+
+                            {/* Previous Button */}
+                            <button 
+                                onClick={goToPrevious}
+                                className="absolute top-1/2 -translate-y-1/2 left-0 md:-left-16 transform bg-white/50 hover:bg-white rounded-full p-2 text-slate-700 shadow-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Next Button */}
+                            <button 
+                                onClick={goToNext}
+                                className="absolute top-1/2 -translate-y-1/2 right-0 md:-right-16 transform bg-white/50 hover:bg-white rounded-full p-2 text-slate-700 shadow-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+
+                            {/* Caption and Counter */}
+                            <div className="text-center mt-4">
+                                <p className="text-slate-700 font-medium">{photos[currentIndex].caption}</p>
+                                <p className="text-sm text-slate-500">{currentIndex + 1} / {photos.length}</p>
+                            </div>
                         </div>
                     </div>
-                    {selectedPhoto && <GalleryModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />}
                 </section>
             );
         }
-
-        function GalleryModal({ photo, onClose }) {
-             React.useEffect(() => {
-                const handleEsc = (event) => {
-                    if (event.keyCode === 27) onClose();
-                };
-                window.addEventListener('keydown', handleEsc);
-                return () => window.removeEventListener('keydown', handleEsc);
-            }, [onClose]);
-            if (!photo) return null;
-            return (
-                <div 
-                    className="fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4"
-                    style={{animation: 'fadeIn 0.3s ease'}}
-                    onClick={onClose}
-                >
-                    <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden" onClick={e => e.stopPropagation()}>
-                        <img src={photo.src} alt={photo.caption} className="w-full h-auto object-contain flex-shrink" style={{maxHeight: 'calc(90vh - 4rem)'}} />
-                        <p className="p-4 text-center text-slate-700 bg-slate-50 flex-shrink-0">{photo.caption}</p>
-                    </div>
-                     <button onClick={onClose} className="absolute top-4 right-4 text-white text-4xl font-bold">&times;</button>
-                </div>
-            );
-        }
-
+        
         // --- Main App Component ---
         function App() {
             return (
@@ -418,10 +455,6 @@
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
-
-        const style = document.createElement('style');
-        style.innerHTML = `@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }`;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
