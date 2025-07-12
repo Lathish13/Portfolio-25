@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lathish - My Gallery</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+    <script>
+    tailwind.theme = {
+      extend: {
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          mono: ['Roboto Mono', 'monospace'],
+        },
+      }
+    }
+    </script>
+
+    <style>
+        /* Base & Animation Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        
+        @keyframes hero-fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-hero-fade-in {
+            animation: hero-fade-in 1s ease-out 0.3s forwards;
+        }
+
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .scroll-reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Modal fade-in animation */
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        /* Futuristic background for the hero section */
+        .futuristic-hero-bg {
+            background-color: #0f172a; /* slate-900 */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(107, 114, 128, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(107, 114, 128, 0.1) 0%, transparent 25%);
+        }
+
+        /* --- UPDATED: Typewriter Animation --- */
+        .typewriter-caret {
+            width: 3px;
+            height: 1.1em;
+            background-color: currentColor;
+            margin-left: 8px;
+            animation: blink-caret 0.75s step-end infinite;
+        }
+        @keyframes blink-caret {
+            from, to { background-color: transparent; }
+            50% { background-color: currentColor; }
+        }
+
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // --- Custom Hooks ---
+        const useIntersectionObserver = (options) => {
+            const containerRef = React.useRef(null);
+            React.useEffect(() => {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, options);
+                
+                const currentRef = containerRef.current;
+                if (currentRef) {
+                    const elements = currentRef.querySelectorAll('.scroll-reveal');
+                    elements.forEach(el => observer.observe(el));
+                }
+                
+                return () => {
+                    if (currentRef) {
+                        const elements = currentRef.querySelectorAll('.scroll-reveal');
+                        elements.forEach(el => observer.unobserve(el));
+                    }
+                };
+            }, [options]);
+            return containerRef;
+        };
+
+        // --- Reusable Components ---
+        function Header() {
+            const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+            const navLinks = [
+                { href: "index.html", text: "Profile" },
+                { href: "interest.html", text: "Volunteering" },
+                { href: "academics.html", text: "Academics" },
+                { href: "badminton.html", text: "Badminton" },
+                { href: "gallery.html", text: "Gallery" },
+            ];
+
+            return (
+                <header className="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-20">
+                            <a href="index.html" className="flex items-center space-x-3 group">
+                                <img 
+                                    src="images/sydney.jpeg" 
+                                    alt="Lathish" 
+                                    className="w-12 h-12 rounded-full object-cover shadow-md transition-all duration-300 group-hover:scale-105"
+                                />
+                                <div>
+                                    <h1 className="text-2xl font-bold text-slate-900">Lathish</h1>
+                                    <p className="text-sm text-slate-500">EAE Portfolio</p>
+                                </div>
+                            </a>
+                            <nav className="hidden md:flex items-center space-x-2">
+                                {navLinks.map(link => (
+                                    <a key={link.text} href={link.href} className={`text-slate-600 hover:text-cyan-500 transition-colors px-4 py-2 rounded-lg hover:bg-cyan-50 font-medium ${window.location.pathname.includes(link.href) ? 'text-cyan-600 bg-cyan-50 font-semibold' : ''}`}>
+                                        {link.text}
+                                    </a>
+                                ))}
+                            </nav>
+                            <div className="md:hidden">
+                                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 rounded-md text-slate-600 hover:bg-slate-100 focus:outline-none">
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        {isMobileMenuOpen ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /> : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />}
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    {isMobileMenuOpen && (
+                        <div className="md:hidden bg-white border-t border-slate-200">
+                            <nav className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
+                                {navLinks.map(link => (
+                                    <a key={link.text} href={link.href} className={`block text-slate-600 hover:text-cyan-500 hover:bg-cyan-50 px-3 py-2 rounded-md text-base font-medium ${window.location.pathname.includes(link.href) ? 'text-cyan-600 bg-cyan-50 font-semibold' : ''}`}>
+                                        {link.text}
+                                    </a>
+                                ))}
+                            </nav>
+                        </div>
+                    )}
+                </header>
+            );
+        }
+
+        function Footer() {
+            return (
+                <footer className="bg-slate-900 text-white py-12">
+                    <div className="text-center text-slate-400">
+                        © {new Date().getFullYear()} Lathish - EAE Portfolio
+                    </div>
+                </footer>
+            );
+        }
+
+        function GalleryModal({ photo, onClose }) {
+             React.useEffect(() => {
+                const handleEsc = (event) => {
+                    if (event.keyCode === 27) onClose();
+                };
+                window.addEventListener('keydown', handleEsc);
+                return () => window.removeEventListener('keydown', handleEsc);
+            }, [onClose]);
+
+            if (!photo) return null;
+
+            return (
+                <div 
+                    className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4"
+                    style={{ animation: 'fadeIn 0.3s ease' }}
+                    onClick={onClose}
+                >
+                    <div className="w-full max-w-5xl max-h-[90vh] flex flex-col items-center" onClick={e => e.stopPropagation()}>
+                        <img 
+                            src={`images/${photo.src}`} 
+                            alt={photo.caption} 
+                            className="shadow-2xl object-contain border-4 border-white"
+                            style={{maxHeight: '85vh'}}
+                        />
+                        <p className="mt-4 text-white text-lg text-center">{photo.caption}</p>
+                    </div>
+                     <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-cyan-300 transition-colors text-5xl font-light">&times;</button>
+                </div>
+            );
+        }
+        
+        // --- UPDATED: Typewriter Text Component ---
+        function TypewriterText({ text, speed = 100, initialDelay = 500, className = '' }) {
+            const [displayText, setDisplayText] = React.useState('');
+            const [showCaret, setShowCaret] = React.useState(true);
+            React.useEffect(() => {
+                const startTyping = () => {
+                    let i = 0;
+                    const interval = setInterval(() => {
+                        if (i < text.length) {
+                            setDisplayText(prev => text.substring(0, i + 1));
+                            i++;
+                        } else {
+                            clearInterval(interval);
+                            setTimeout(() => setShowCaret(false), 2000);
+                        }
+                    }, speed);
+                };
+                const delay = setTimeout(startTyping, initialDelay);
+                return () => clearTimeout(delay);
+            }, [text, speed, initialDelay]);
+
+            return (
+                <span className={`inline-flex items-baseline ${className}`}>
+                    <span>{displayText}</span>
+                    {showCaret && <span className="typewriter-caret"></span>}
+                </span>
+            );
+        }
+
+        function GalleryHeroSection() {
+            return (
+                <section className="py-24 sm:py-32 text-center text-white futuristic-hero-bg overflow-hidden">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-5xl md:text-7xl font-black tracking-tight" style={{textShadow: '0px 4px 25px rgba(0, 0, 0, 0.3)'}}>
+                            <TypewriterText text="Gallery of Achievements" speed={80} initialDelay={500} />
+                        </h1>
+                        <p className="text-xl text-slate-300 max-w-2xl mx-auto mt-6 animate-hero-fade-in" style={{animationDelay: '2.8s'}}>
+                            A collection of my certificates, awards, and memorable moments.
+                        </p>
+                    </div>
+                </section>
+            );
+        }
+
+        function PhotoGridSection() {
+            const photos = [
+                { src: 'Tamil Book Prize 2025.jpg', caption: 'SST Book Prize for Tamil', location: 'SST, Singapore', year: '2025', category: 'Academics' },
+                { src: 'Service Learning.jpg', caption: 'Service Learning Fellowship', location: 'SST, Singapore', year: '2024', category: 'Volunteering' },
+                { src: 'AI4I®-–-Literacy-in-AI_AI4I®-Literacy-in-AI_Lathish-Vijay-Ganesh.jpg', caption: 'AI For Industry®', location: 'AI Singapore', year: '2024', category: 'Tech' },
+                { src: 'Introduction to python.jpg', caption: 'Introduction to Python', location: 'Sololearn', year: '2024', category: 'Tech' },
+                { src: 'Edusave Good Progress Award 2023.jpg', caption: 'Edusave Good Progress Award', location: 'SST, Singapore', year: '2023', category: 'Academics' },
+                { src: 'Sec 2 Performance Task First Runner up.jpg', caption: 'Geography Performance Task (1st Runner-Up)', location: 'SST, Singapore', year: '2023', category: 'Academics' },
+                { src: 'Perse Programming Competition - Distinction:Gold.jpg', caption: 'Perse Coding (Distinction)', location: 'International', year: '2023', category: 'Tech' },
+                { src: 'Apple Teacher Progress Report.jpg', caption: 'Apple Teacher Badges', location: 'Apple', year: '2022', category: 'Tech' },
+                { src: 'Apple Teacher Badge.jpg', caption: 'Apple Teacher Recognition', location: 'Apple', year: '2022', category: 'Tech' },
+                { src: 'Edusave Academic Achievement Award.jpg', caption: 'Edusave Academic Achievement', location: 'De La Salle School', year: '2021', category: 'Academics' },
+                { src: 'CDC Education Merit Award.jpg', caption: 'CCC-CDC Education Merit Award', location: 'De La Salle School', year: '2021', category: 'Academics' },
+                { src: 'Primary 6 general Proficiency Award.jpg', caption: 'General Proficiency Award (Merit)', location: 'De La Salle School', year: '2021', category: 'Academics' },
+                { src: 'Oratory contest.jpg', caption: 'Tamil Oratory Contest', location: 'Assoc. of Singapore Tamil Writers', year: '2021', category: 'Arts' },
+                { src: 'Chinese conversational skill.jpg', caption: 'Conversational Chinese (Basic 1)', location: 'De La Salle School', year: '2019', category: 'Language' },
+                { src: 'Beginner Conversational mandarin course.jpg', caption: 'Conversational Mandarin (Beginner)', location: 'De La Salle School', year: '2018', category: 'Language' },
+                { src: 'Drama Certficate.jpg', caption: 'Drama for Communication', location: 'Act 3 Drama Academy', year: '2017', category: 'Arts' },
+                { src: 'Swimsafer Bronze.jpg', caption: 'Swimsafer Bronze Award', location: 'ActiveSG', year: '2017', category: 'Sports' },
+                { src: 'SwimSafer.jpg', caption: 'Swimsafer Stage 3 Award', location: 'ActiveSG', year: '2017', category: 'Sports' },
+                { src: 'Performance 2017.jpg', caption: 'Deepavali Performance 2017', location: 'Yew Tee Zone 9', year: '2017', category: 'Arts' },
+                { src: 'Perfomance 2016.jpg', caption: 'Deepavali Celebration 2016', location: 'Yew Tee Zone 12', year: '2016', category: 'Arts' },
+                { src: 'Second performance 2016.jpg', caption: 'Onam @ Yew Tee Performance', location: 'Marsiling-Yew Tee GRC', year: '2016', category: 'Arts' },
+            ].sort((a, b) => b.year.localeCompare(a.year));
+
+            const [selectedPhoto, setSelectedPhoto] = React.useState(null);
+            const galleryRef = useIntersectionObserver({ threshold: 0.1 });
+
+            return (
+                <section id="gallery-grid" className="py-20 sm:py-28 bg-slate-100">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div ref={galleryRef} className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                            {photos.map((photo, index) => (
+                                <div
+                                    key={index}
+                                    className="scroll-reveal break-inside-avoid group overflow-hidden cursor-pointer bg-slate-800 relative transition-all duration-300 hover:shadow-cyan-500/20 hover:-translate-y-1 border-2 border-black"
+                                    style={{ transitionDelay: `${index * 50}ms` }}
+                                    onClick={() => setSelectedPhoto(photo)}
+                                >
+                                    {/* Image */}
+                                    <img 
+                                        src={`images/${photo.src}`} 
+                                        alt={photo.caption} 
+                                        className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
+                                        onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/600x400/ef4444/ffffff?text=Error'; }}
+                                    />
+                                    
+                                    {/* Tags */}
+                                    <div className="absolute top-2.5 left-2.5 bg-black text-white font-mono text-xs font-medium px-2 py-1 border border-white/75">{photo.year}</div>
+                                    <div className="absolute top-2.5 right-2.5 bg-black text-white font-mono text-xs font-medium px-2 py-1 border border-white/75">{photo.category}</div>
+
+                                    {/* Hover Overlay with Caption */}
+                                    <div className="absolute inset-0 p-4 flex flex-col justify-end bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+                                        <h3 className="text-white font-bold text-lg">{photo.caption}</h3>
+                                        <p className="text-slate-300 text-sm">{photo.location}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <GalleryModal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
+                </section>
+            );
+        }
+
+        // --- Main App Component ---
+        function App() {
+            return (
+                <div>
+                    <Header />
+                    <main>
+                        <GalleryHeroSection />
+                        <PhotoGridSection />
+                    </main>
+                    <Footer />
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
