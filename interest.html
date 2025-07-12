@@ -107,22 +107,6 @@
             background-color: #e2e8f0; /* slate-200 */
         }
 
-        /* --- NEW Gallery Sliding Animation --- */
-        @keyframes slide-in-from-right {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes slide-in-from-left {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .slide-in-next {
-            animation: slide-in-from-right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-        .slide-in-prev {
-            animation: slide-in-from-left 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -141,9 +125,17 @@
                         }
                     });
                 }, options);
-                const elements = containerRef.current.querySelectorAll('.scroll-reveal');
-                elements.forEach(el => observer.observe(el));
-                return () => observer.disconnect();
+                const currentRef = containerRef.current;
+                if(currentRef) {
+                    const elements = currentRef.querySelectorAll('.scroll-reveal');
+                    elements.forEach(el => observer.observe(el));
+                }
+                return () => {
+                    if(currentRef){
+                       const elements = currentRef.querySelectorAll('.scroll-reveal');
+                       elements.forEach(el => observer.unobserve(el));
+                    }
+                };
             }, [options]);
             return containerRef;
         };
@@ -161,11 +153,13 @@
         // --- Reusable Components ---
         function Header() {
             const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+            // --- Nav links updated to include the new Gallery page ---
             const navLinks = [
                 { href: "index.html", text: "Profile" },
-                { href: "interest.html", text: "Achievements" },
+                { href: "interest.html", text: "Volunteering" },
                 { href: "academics.html", text: "Academics" },
                 { href: "badminton.html", text: "Badminton" },
+                { href: "gallery.html", text: "Gallery" },
             ];
 
             return (
@@ -173,9 +167,11 @@
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-center h-20">
                             <a href="index.html" className="flex items-center space-x-3 group">
-                                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md transition-all duration-300 group-hover:bg-blue-700 group-hover:scale-105">
-                                    <span className="text-white font-black text-2xl">L</span>
-                                </div>
+                                <img 
+                                    src="images/sydney.jpeg" 
+                                    alt="Lathish" 
+                                    className="w-12 h-12 rounded-full object-cover shadow-md transition-all duration-300 group-hover:scale-105"
+                                />
                                 <div>
                                     <h1 className="text-2xl font-bold text-slate-900">Lathish</h1>
                                     <p className="text-sm text-slate-500">EAE Portfolio</p>
@@ -183,7 +179,7 @@
                             </a>
                             <nav className="hidden md:flex items-center space-x-2">
                                 {navLinks.map(link => (
-                                    <a key={link.text} href={link.href} className="text-slate-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50 font-medium">
+                                    <a key={link.text} href={link.href} className={`text-slate-600 hover:text-green-600 transition-colors px-4 py-2 rounded-lg hover:bg-green-50 font-medium ${window.location.pathname.includes(link.href) ? 'text-green-600 bg-green-50' : ''}`}>
                                         {link.text}
                                     </a>
                                 ))}
@@ -201,7 +197,7 @@
                         <div className="md:hidden bg-white border-t border-slate-200">
                             <nav className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
                                 {navLinks.map(link => (
-                                    <a key={link.text} href={link.href} className="block text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium">
+                                    <a key={link.text} href={link.href} className={`block text-slate-600 hover:text-green-600 hover:bg-green-50 px-3 py-2 rounded-md text-base font-medium ${window.location.pathname.includes(link.href) ? 'text-green-600 bg-green-50' : ''}`}>
                                         {link.text}
                                     </a>
                                 ))}
@@ -293,6 +289,7 @@
                                 </h1>
                                 <p className="text-xl text-slate-300 max-w-2xl mx-auto mt-6" style={{textShadow: '0px 2px 8px rgba(0, 0, 0, 0.5)'}}>
                                     A record of my contributions and service to the community.
+                                   
                                 </p>
                             </div>
                             <div className="animate-hero-fade-in" style={{ animationDelay: '0.6s' }}>
@@ -352,86 +349,30 @@
             );
         }
 
-        // --- UPDATED PHOTO GALLERY COMPONENT WITH SLIDING ANIMATION ---
-        function PhotoGallery() {
-            const photos = [
-                { src: 'images/Apple Teacher Badge.pdf', caption: 'Apple Teacher Badge Certification' },
-                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Certificate+2', caption: 'Certificate of Appreciation from SGBono.' },
-                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Volunteering+Photo+1', caption: 'Working with the team at Rainbow Centre.' },
-                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Volunteering+Photo+2', caption: 'Advocating for my CCA at the DSA Open House.' },
-                { src: 'https://placehold.co/800x600/a3e635/14532d?text=Certificate+3', caption: 'Service Learning Programme Completion.' },
-            ];
-
-            const [currentIndex, setCurrentIndex] = React.useState(0);
-            const [animationClass, setAnimationClass] = React.useState('');
-
-            const goToPrevious = () => {
-                setAnimationClass('slide-in-prev');
-                const isFirstSlide = currentIndex === 0;
-                const newIndex = isFirstSlide ? photos.length - 1 : currentIndex - 1;
-                setTimeout(() => setCurrentIndex(newIndex), 0);
-            };
-
-            const goToNext = () => {
-                setAnimationClass('slide-in-next');
-                const isLastSlide = currentIndex === photos.length - 1;
-                const newIndex = isLastSlide ? 0 : currentIndex + 1;
-                setTimeout(() => setCurrentIndex(newIndex), 0);
-            };
-
-            React.useEffect(() => {
-                const handleKeyDown = (e) => {
-                    if (e.key === 'ArrowLeft') goToPrevious();
-                    if (e.key === 'ArrowRight') goToNext();
-                };
-                window.addEventListener('keydown', handleKeyDown);
-                return () => window.removeEventListener('keydown', handleKeyDown);
-            }, [currentIndex]); // Re-add listener if currentIndex changes to get the latest state
+        function ExperienceSection() {
+            const sectionRef = useIntersectionObserver({ threshold: 0.1 });
 
             return (
-                <section id="gallery" className="py-20 sm:py-28 bg-white">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="text-center mb-16">
-                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Gallery</h2>
-                            <p className="text-lg text-slate-600 mt-3">Moments & Certificates from my volunteering journey.</p>
+                <section id="experience" className="py-20 sm:py-28 bg-white" ref={sectionRef}>
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="text-center mb-16 scroll-reveal">
+                            <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">My Experience</h2>
+                            <p className="text-lg text-slate-600 mt-3 max-w-2xl mx-auto">A reflection on my key service-learning project.</p>
                         </div>
 
-                        <div className="max-w-5xl mx-auto relative group">
-                            {/* Large Image Display Container */}
-                            <div className="relative w-full aspect-[4/3] rounded-xl shadow-2xl overflow-hidden bg-slate-100 border-4 border-slate-200">
-                                <img 
-                                    key={currentIndex} // Re-trigger animation on change
-                                    src={photos[currentIndex].src} 
-                                    alt={photos[currentIndex].caption} 
-                                    className={`w-full h-full object-contain absolute top-0 left-0 ${animationClass}`}
-                                />
-                            </div>
-
-                            {/* Previous Button */}
-                            <button 
-                                onClick={goToPrevious}
-                                className="absolute top-1/2 -translate-y-1/2 left-0 md:-left-16 transform bg-white/50 hover:bg-white rounded-full p-2 text-slate-700 shadow-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-
-                            {/* Next Button */}
-                            <button 
-                                onClick={goToNext}
-                                className="absolute top-1/2 -translate-y-1/2 right-0 md:-right-16 transform bg-white/50 hover:bg-white rounded-full p-2 text-slate-700 shadow-md transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-
-                            {/* Caption and Counter */}
-                            <div className="text-center mt-4">
-                                <p className="text-slate-700 font-medium">{photos[currentIndex].caption}</p>
-                                <p className="text-sm text-slate-500">{currentIndex + 1} / {photos.length}</p>
-                            </div>
+                        <div className="prose prose-lg max-w-none text-slate-700 leading-relaxed space-y-6">
+                            <p className="scroll-reveal" style={{ transitionDelay: '100ms' }}>
+                                I have shown initiative and commitment to community service through my work with the self-initiated HWSOP24(MDC) Mobile Heartware Network and Youthbank Digital Clinic for Seniors 2024. I started and organised a digital literacy clinic because I noticed the digital divide affecting elderly Chinese speakers. This project reflects my active approach to addressing social needs and dedication to using technology to support vulnerable populations.
+                            </p>
+                            <p className="scroll-reveal" style={{ transitionDelay: '200ms' }}>
+                                The HWSOP24(MDC) initiative shows my commitment to community engagement. The direct help given to Chinese-speaking elderly individuals in Singapore with their digital devices illustrates meaningful community service. Additionally, the recorded 39 hours of service for this project represents the total time I devoted to consistent work and dedication.
+                            </p>
+                            <p className="scroll-reveal" style={{ transitionDelay: '300ms' }}>
+                                The goal was to bridge the digital literacy gaps among elderly residents by providing hands-on training for their digital devices. The teaching covered smartphone and tablet use and computer operation for communication, information access, and daily tasks. I explained the risks and benefits of the internet and taught safe and responsible online practices. The project required flexible teaching methods to accommodate the various educational needs and learning speeds of the elderly participants. During this experience, I gained both technical skills and interpersonal abilities, as I needed effective communication with people with limited technology experience.
+                            </p>
+                            <p className="scroll-reveal" style={{ transitionDelay: '400ms' }}>
+                                This service-learning experience deepened my understanding of social responsibility and the importance of addressing the digital divide. I improved my ability to explain complex technology concepts to individuals with different levels of digital literacy. Working with elderly participants taught me empathy and patience as they faced unique challenges in learning new technological skills. The project also pushed me to develop organisational and project management skills, as I had to plan and run the digital literacy clinic. I dedicated 39 hours to helping elderly people and grew personally through this experience, recognising that contributing to society has a meaningful impact. I plan to continue seeking opportunities to use my skills to serve the community while advocating for digital access for all.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -446,7 +387,7 @@
                     <main>
                         <VolunteeringHeroSection />
                         <InvolvementSection />
-                        <PhotoGallery />
+                        <ExperienceSection />
                     </main>
                     <Footer />
                 </div>
