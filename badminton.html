@@ -155,21 +155,25 @@
         // --- Reusable Components ---
         function Header() {
             const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
-            // --- CHANGE: Updated "Academics" link to point to the external page ---
+            // --- Nav links updated to include the new Gallery page ---
             const navLinks = [
-    { href: "index.html", text: "Profile" },
-    { href: "interest.html", text: "Achievements" },
-    { href: "academics.html", text: "Academics" },
-    { href: "badminton.html", text: "Badminton" },
-];
+                { href: "index.html", text: "Profile" },
+                { href: "interest.html", text: "Volunteering" },
+                { href: "academics.html", text: "Academics" },
+                { href: "badminton.html", text: "Badminton" },
+                { href: "gallery.html", text: "Gallery" },
+            ];
+
             return (
                 <header className="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex justify-between items-center h-20">
                             <a href="index.html" className="flex items-center space-x-3 group">
-                                <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-md transition-all duration-300 group-hover:bg-blue-700 group-hover:scale-105">
-                                    <span className="text-white font-black text-2xl">L</span>
-                                </div>
+                                <img 
+                                    src="images/sydney.jpeg" 
+                                    alt="Lathish" 
+                                    className="w-12 h-12 rounded-full object-cover shadow-md transition-all duration-300 group-hover:scale-105"
+                                />
                                 <div>
                                     <h1 className="text-2xl font-bold text-slate-900">Lathish</h1>
                                     <p className="text-sm text-slate-500">EAE Portfolio</p>
@@ -177,7 +181,7 @@
                             </a>
                             <nav className="hidden md:flex items-center space-x-2">
                                 {navLinks.map(link => (
-                                    <a key={link.text} href={link.href} className="text-slate-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50 font-medium">
+                                    <a key={link.text} href={link.href} className={`text-slate-600 hover:text-blue-600 transition-colors px-4 py-2 rounded-lg hover:bg-blue-50 font-medium ${window.location.pathname.includes(link.href) ? 'text-blue-600 bg-blue-50' : ''}`}>
                                         {link.text}
                                     </a>
                                 ))}
@@ -199,7 +203,7 @@
                         <div className="md:hidden bg-white border-t border-slate-200">
                             <nav className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
                                 {navLinks.map(link => (
-                                    <a key={link.text} href={link.href} className="block text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium">
+                                    <a key={link.text} href={link.href} className={`block text-slate-600 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md text-base font-medium ${window.location.pathname.includes(link.href) ? 'text-blue-600 bg-blue-50' : ''}`}>
                                         {link.text}
                                     </a>
                                 ))}
@@ -298,9 +302,9 @@
 
 
             const highlights = [
-                { icon: '🏆', value: 'Bronze', label: 'Yuhua CSN 2024' },
-                { icon: '🗓️', value: '4+', label: 'Years Experience' },
-                { icon: '🏅', value: '10+', label: 'Competitions' },
+                { icon: '🥉', value: 'Bronze', label: 'Yuhua CSN 2024' },
+                { icon: '🏸', value: '4+', label: 'Years Experience' },
+                { icon: '🏆', value: '10+', label: 'Competitions' },
             ];
 
             return (
@@ -349,7 +353,7 @@
                         <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80 transition-all duration-300 hover:shadow-2xl hover:border-blue-500 hover:-translate-y-1 relative">
                              {item.highlight && (
                                 <div className="absolute top-0 right-0 -mt-3 -mr-3 flex items-center justify-center w-12 h-12 bg-amber-400 rounded-full shadow-lg">
-                                    <span className="text-amber-900 text-2xl">🏆</span>
+                                    <span className="text-amber-900 text-2xl">🥉</span>
                                 </div>
                             )}
                             <p className="text-sm font-semibold text-blue-600 mb-1">{item.year}</p>
@@ -398,7 +402,7 @@
                                     <div key={index} className="scroll-reveal pl-12 relative">
                                          <div className="absolute top-1 -left-1.5 w-6 h-6 rounded-full bg-white border-4 border-blue-600 z-10"></div>
                                         <div className="bg-white p-6 rounded-xl shadow-lg border border-slate-200/80">
-                                            {item.highlight && <span className="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">🏆 BRONZE</span>}
+                                            {item.highlight && <span className="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">🥉 BRONZE</span>}
                                             <p className="text-sm font-semibold text-blue-600 mb-1">{item.year}</p>
                                             <h3 className="text-xl font-bold text-slate-800 mb-2">{item.event}</h3>
                                             <p className="text-slate-600">{item.details}</p>
